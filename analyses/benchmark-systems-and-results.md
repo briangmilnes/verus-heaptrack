@@ -91,10 +91,3 @@ All fixtures verified clean against Verus `f04abf70` (1.94.0).
 
 Verus built with: `vargo build --release --features singular`
 
-## Observations
-
-APAS-VERUS is the largest fixture, with more proof lines (29,968) than all other fixtures
-combined (18,536) and more verified functions (4,265 vs 3,065 combined).
-
-APAS-VERUS is exec-heavy (53K exec vs 30K proof), reflecting the project's focus on
-executable algorithm implementations with accompanying verification.
