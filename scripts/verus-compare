@@ -1,0 +1,72 @@
+#!/bin/bash
+#
+# verus-compare — Run baseline and patched benchmarks back-to-back,
+# then print a comparison table.
+#
+# Prerequisites:
+#   - Original verus built at ~/projects/verus/source/target-verus/release/
+#   - Patched verus built at ~/projects/verus-patched/source/target-verus/release/
+#     (use scripts/setup-verus-fork --apply-patch to create this)
+#
+# Usage:
+#   cd ~/projects/APAS-VERUS   # or any crate to verify
+#   ~/projects/verus-heaptrack/scripts/verus-compare src/lib.rs [verus-args...]
+#
+# Example:
+#   verus-compare src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+VERUS_ORIGINAL="${VERUS_ORIGINAL:-$HOME/projects/verus/source/target-verus/release}"
+VERUS_PATCHED="${VERUS_PATCHED:-$HOME/projects/verus-patched/source/target-verus/release}"
+RUNS="${BENCHMARK_RUNS:-3}"
+
+if [ $# -lt 1 ]; then
+    echo "Usage: verus-compare <source-file> [verus-args...]" >&2
+    exit 1
+fi
+
+SOURCE_FILE="$1"
+
+for dir in "$VERUS_ORIGINAL" "$VERUS_PATCHED"; do
+    if [ ! -x "$dir/rust_verify" ]; then
+        echo "error: rust_verify not found at $dir" >&2
+        echo "" >&2
+        echo "Build instructions:" >&2
+        echo "  Original: cd ~/projects/verus/source && vargo build --release" >&2
+        echo "  Patched:  $SCRIPT_DIR/setup-verus-fork --apply-patch" >&2
+        exit 1
+    fi
+done
+
+echo "============================================="
+echo " verus-compare: baseline vs patched"
+echo "============================================="
+echo " source:   $SOURCE_FILE"
+echo " runs:     $RUNS each"
+echo " baseline: $VERUS_ORIGINAL"
+echo " patched:  $VERUS_PATCHED"
+echo "============================================="
+echo ""
+
+echo ">>> BASELINE (unpatched verus) <<<"
+echo ""
+VERUS_ROOT="$VERUS_ORIGINAL" \
+BENCHMARK_LABEL=baseline \
+BENCHMARK_RUNS="$RUNS" \
+"$SCRIPT_DIR/verus-benchmark" "$@"
+
+echo ""
+echo ">>> PATCHED (drop-vir-krate-early) <<<"
+echo ""
+VERUS_ROOT="$VERUS_PATCHED" \
+BENCHMARK_LABEL=patched \
+BENCHMARK_RUNS="$RUNS" \
+"$SCRIPT_DIR/verus-benchmark" "$@"
+
+echo ""
+echo "============================================="
+echo " Compare results in: $(cd "$SCRIPT_DIR/.." && pwd)/results/"
+echo " Look at peak_rss_kb and wall_time across runs."
+echo "============================================="

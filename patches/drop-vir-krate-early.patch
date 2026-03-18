@@ -1,0 +1,49 @@
+Subject: Drop VIR Krate after SST conversion to reduce peak memory
+
+The VIR Krate (containing paths, expressions, types, statements) is held
+alive during Z3 verification even though all data was converted to KrateSst
+beforehand. This patch releases the Krate as early as possible.
+
+Estimated savings: ~300 MB on a 1.36 GB peak heap (APAS-VERUS workload).
+
+Base commit: 76e69b81 (verus-lang/verus)
+
+diff --git a/source/rust_verify/src/verifier.rs b/source/rust_verify/src/verifier.rs
+--- a/source/rust_verify/src/verifier.rs
++++ b/source/rust_verify/src/verifier.rs
+@@ -2045,6 +2045,9 @@ impl Verifier {
+         let reporter = Reporter::new(spans, compiler);
+         let krate = self.vir_crate.clone().expect("vir_crate should be initialized");
++        // Release the Verifier's reference now that we have a local clone.
++        // Thread workers receive &krate as a parameter, not self.vir_crate.
++        self.vir_crate = None;
+         let air_no_span = self.air_no_span.clone().expect("air_no_span should be initialized");
+
+         #[cfg(debug_assertions)]
+@@ -1998,6 +2001,8 @@ impl Verifier {
+             &self.get_bucket(bucket_id).funs,
+             &pruned_krate,
+         )?;
++        // SST conversion complete; the pruned VIR Krate is no longer needed.
++        drop(pruned_krate);
+         if self.args.log_all || self.args.log_args.log_vir_sst {
+             let mut file =
+                 self.create_log_file(Some(&bucket_id), crate::config::VIR_SST_FILE_SUFFIX)?;
+@@ -2220,6 +2225,9 @@ impl Verifier {
+                 workers.push(worker);
+             }
+
++            // Each thread holds its own Arc clone via thread_krate; release ours.
++            drop(krate);
++
+             let multi_progress = indicatif::MultiProgress::with_draw_target(
+                 indicatif::ProgressDrawTarget::stderr_with_hz(1),
+             );
+@@ -2552,6 +2560,7 @@ impl Verifier {
+                     global_ctx,
+                 )?;
+             }
++            drop(krate);
+         }
+
+         if self.args.profile && self.count_errors == 0 {

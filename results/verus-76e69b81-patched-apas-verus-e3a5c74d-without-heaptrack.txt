@@ -1,0 +1,1218 @@
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStEph.rs:371:21
+    |
+371 |                     assert forall|j: int| 0 <= j < i + 1
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStEph.rs:372:55
+    |
+372 |                         implies constructed@.contains(seq@[j]) by {
+    |                                                       ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStEph.rs:358:21
+    |
+358 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStEph.rs:358:73
+    |
+358 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                                                                         ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStEph.rs:391:17
+    |
+391 |                 assert forall|v: <T as View>::V|
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStEph.rs:392:21
+    |
+392 |                     constructed@.contains(v) == seq@.to_set().contains(v) by {
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:143:43
+    |
+143 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:143:79
+    |
+143 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                               ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:153:42
+    |
+153 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:153:78
+    |
+153 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:163:49
+    |
+163 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:163:77
+    |
+163 | ...   predecessor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                                                                   ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:173:47
+    |
+173 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:173:75
+    |
+173 | ...   successor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                                                                 ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:189:17
+    |
+189 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@;
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:189:27
+    |
+189 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@;
+    |                           ^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:211:55
+    |
+211 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:211:68
+    |
+211 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                    ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:221:69
+    |
+221 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:221:82
+    |
+221 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:234:17
+    |
+234 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.1@.contains(x);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:234:27
+    |
+234 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.1@.contains(x);
+    |                           ^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:722:17
+    |
+722 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:722:27
+    |
+722 |                 forall|x| self@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@,
+    |                           ^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:812:55
+    |
+812 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len(),
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:812:68
+    |
+812 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len(),
+    |                                                                    ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:831:69
+    |
+831 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int,
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:831:82
+    |
+831 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int,
+    |                                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:401:21
+    |
+401 |                     assert forall|t: T| self@.contains(t@)
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:402:33
+    |
+402 |                         implies TotalOrder::le(min_val, t) by {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:479:21
+    |
+479 |                     assert forall|t: T| self@.contains(t@)
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:480:33
+    |
+480 |                         implies TotalOrder::le(t, max_val) by {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:587:21
+    |
+587 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:587:56
+    |
+587 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@
+    |                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStPer.rs:695:21
+    |
+695 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStPer.rs:695:56
+    |
+695 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@
+    |                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap45/BalancedTreePQ.rs:266:21
+    |
+266 |                     assert forall|k: int| 0 <= k < vals@.map_values(view_fn).len()
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap45/BalancedTreePQ.rs:267:33
+    |
+267 |                         implies vals@.map_values(view_fn)[k]
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:157:43
+    |
+157 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:157:85
+    |
+157 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                                     ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:167:42
+    |
+167 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:167:84
+    |
+167 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                                    ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:177:49
+    |
+177 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:177:83
+    |
+177 | ...   predecessor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le...
+    |                                                                         ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:187:47
+    |
+187 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:187:81
+    |
+187 | ...   successor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v...
+    |                                                                       ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:212:61
+    |
+212 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:212:74
+    |
+212 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                          ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtPer.rs:222:75
+    |
+222 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtPer.rs:222:88
+    |
+222 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                              ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:391:29
+    |
+391 | ...                   assert forall|x: T| spec_contains_link(&left.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:392:34
+    |
+392 | ...                   (T::le(left_key, x) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:476:33
+    |
+476 | ...                   assert forall|x: T| spec_contains_link(&ll.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:477:38
+    |
+477 | ...                   (T::le(ll_key, x) && x != ll_key)
+    |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:498:33
+    |
+498 | ...                   assert forall|x: T| spec_contains_link(&left.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:499:38
+    |
+499 | ...                   (T::le(x, left_key) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:504:33
+    |
+504 | ...                   assert forall|x: T| spec_contains_link(&left.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:505:38
+    |
+505 | ...                   (T::le(left_key, x) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:571:33
+    |
+571 | ...                   assert forall|x: T| spec_contains_link(&left.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:572:38
+    |
+572 | ...                   (T::le(left_key, x) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:658:33
+    |
+658 | ...                   assert forall|x: T| spec_contains_link(&lr.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:659:38
+    |
+659 | ...                   (T::le(x, lr_key) && x != lr_key)
+    |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:671:33
+    |
+671 | ...                   assert forall|x: T| spec_contains_link(&lr.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:672:38
+    |
+672 | ...                   (T::le(lr_key, x) && x != lr_key)
+    |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:685:33
+    |
+685 | ...                   assert forall|x: T| spec_contains_link(&left.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:686:38
+    |
+686 | ...                   (T::le(left_key, x) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:691:33
+    |
+691 | ...                   assert forall|x: T| spec_contains_link(&root.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:692:38
+    |
+692 | ...                   (T::le(x, root_key) && x != root_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:770:33
+    |
+770 | ...                   assert forall|x: T| spec_contains_link(&left.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:771:38
+    |
+771 | ...                   (T::le(left_key, x) && x != left_key)
+    |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:868:29
+    |
+868 | ...                   assert forall|x: T| spec_contains_link(&right.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:869:34
+    |
+869 | ...                   (T::le(x, right_key) && x != right_key)
+    |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:955:33
+    |
+955 | ...                   assert forall|x: T| spec_contains_link(&rr.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:956:38
+    |
+956 | ...                   (T::le(x, rr_key) && x != rr_key)
+    |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:977:33
+    |
+977 | ...                   assert forall|x: T| spec_contains_link(&right.right, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:978:38
+    |
+978 | ...                   (T::le(right_key, x) && x != right_key)
+    |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap37/BSTSplayStEph.rs:983:33
+    |
+983 | ...                   assert forall|x: T| spec_contains_link(&right.left, x) implies
+    |                       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap37/BSTSplayStEph.rs:984:38
+    |
+984 | ...                   (T::le(x, right_key) && x != right_key)
+    |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1061:33
+     |
+1061 | ...                   assert forall|x: T| spec_contains_link(&right.left, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1062:38
+     |
+1062 | ...                   (T::le(x, right_key) && x != right_key)
+     |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1148:33
+     |
+1148 | ...                   assert forall|x: T| spec_contains_link(&rl.right, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1149:38
+     |
+1149 | ...                   (T::le(rl_key, x) && x != rl_key)
+     |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1161:33
+     |
+1161 | ...                   assert forall|x: T| spec_contains_link(&rl.left, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1162:38
+     |
+1162 | ...                   (T::le(x, rl_key) && x != rl_key)
+     |                        ^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1175:33
+     |
+1175 | ...                   assert forall|x: T| spec_contains_link(&right.left, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1176:38
+     |
+1176 | ...                   (T::le(x, right_key) && x != right_key)
+     |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1181:33
+     |
+1181 | ...                   assert forall|x: T| spec_contains_link(&root.right, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1182:38
+     |
+1182 | ...                   (T::le(root_key, x) && x != root_key)
+     |                        ^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1249:33
+     |
+1249 | ...                   assert forall|x: T| spec_contains_link(&right.left, x) implies
+     |                       ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1250:38
+     |
+1250 | ...                   (T::le(x, right_key) && x != right_key)
+     |                        ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1507:31
+     |
+1507 |             min.is_some() ==> forall|x: T| spec_contains_link(link, x) ==> T::le(*min.unwrap(), x),
+     |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1507:44
+     |
+1507 |             min.is_some() ==> forall|x: T| spec_contains_link(link, x) ==> T::le(*min.unwrap(), x),
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1515:25
+     |
+1515 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(node.key, x) by {
+     |                         ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1515:45
+     |
+1515 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(node.key, x) by {
+     |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1533:25
+     |
+1533 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(*min.unwrap(), x) by {
+     |                         ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1533:45
+     |
+1533 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(*min.unwrap(), x) by {
+     |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1559:31
+     |
+1559 |             max.is_some() ==> forall|x: T| spec_contains_link(link, x) ==> T::le(x, *max.unwrap()),
+     |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1559:44
+     |
+1559 |             max.is_some() ==> forall|x: T| spec_contains_link(link, x) ==> T::le(x, *max.unwrap()),
+     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1567:25
+     |
+1567 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(x, node.key) by {
+     |                         ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1567:45
+     |
+1567 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(x, node.key) by {
+     |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap37/BSTSplayStEph.rs:1585:25
+     |
+1585 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(x, *max.unwrap()) by {
+     |                         ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap37/BSTSplayStEph.rs:1585:45
+     |
+1585 |                         assert forall|x: T| spec_contains_link(link, x) implies T::le(x, *max.unwrap()) by {
+     |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:208:43
+    |
+208 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:208:85
+    |
+208 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                                     ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:218:42
+    |
+218 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:218:84
+    |
+218 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                                    ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:228:49
+    |
+228 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:228:83
+    |
+228 | ...   predecessor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le...
+    |                                                                         ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:238:47
+    |
+238 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:238:81
+    |
+238 | ...   successor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v...
+    |                                                                       ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:263:61
+    |
+263 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:263:74
+    |
+263 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                          ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:273:75
+    |
+273 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:273:88
+    |
+273 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                              ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:529:28
+    |
+529 |                     assume(forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(best, t));
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:529:70
+    |
+529 |                     assume(forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(best, t));
+    |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:560:28
+    |
+560 |                     assume(forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, best));
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:560:70
+    |
+560 |                     assume(forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, best));
+    |                                                                      ^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:592:49
+    |
+592 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v));
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:592:83
+    |
+592 | ...   assume(best matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le...
+    |                                                                         ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:623:49
+    |
+623 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t));
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:623:83
+    |
+623 | ...   assume(best matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le...
+    |                                                                         ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedTableMtEph.rs:723:69
+    |
+723 |                 assume(count as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len());
+    |                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedTableMtEph.rs:723:82
+    |
+723 |                 assume(count as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len());
+    |                                                                                  ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStPer.rs:251:21
+    |
+251 |                     assert forall|j: int| 0 <= j < i + 1
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStPer.rs:252:55
+    |
+252 |                         implies constructed@.contains(seq@[j]) by {
+    |                                                       ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStPer.rs:238:21
+    |
+238 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStPer.rs:238:73
+    |
+238 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                                                                         ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/AVLTreeSetStPer.rs:271:17
+    |
+271 |                 assert forall|v: <T as View>::V|
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/AVLTreeSetStPer.rs:272:21
+    |
+272 |                     constructed@.contains(v) == seq@.to_set().contains(v) by {
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/ArraySetStEph.rs:532:21
+    |
+532 |                     assert forall|j: int| 0 <= j < i + 1
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/ArraySetStEph.rs:533:55
+    |
+533 |                         implies constructed@.contains(seq@[j]) by {
+    |                                                       ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/ArraySetStEph.rs:519:21
+    |
+519 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/ArraySetStEph.rs:519:73
+    |
+519 |                     forall|j: int| 0 <= j < i ==> constructed@.contains(seq@[j]),
+    |                                                                         ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap41/ArraySetStEph.rs:552:17
+    |
+552 |                 assert forall|v: <T as View>::V|
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap41/ArraySetStEph.rs:553:21
+    |
+553 |                     constructed@.contains(v) == seq@.to_set().contains(v) by {
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:251:43
+    |
+251 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:251:85
+    |
+251 |                 first matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                                     ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:260:42
+    |
+260 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:260:84
+    |
+260 |                 last matches Some(v) ==> forall|t: K| self@.dom().contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                                    ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:269:49
+    |
+269 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:269:83
+    |
+269 | ...   predecessor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le...
+    |                                                                         ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:278:47
+    |
+278 | ...s Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:278:81
+    |
+278 | ...   successor matches Some(v) ==> forall|t: K| self@.dom().contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v...
+    |                                                                       ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:299:61
+    |
+299 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:299:74
+    |
+299 |                 rank as int == self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                          ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/AugOrderedTableMtEph.rs:308:75
+    |
+308 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/AugOrderedTableMtEph.rs:308:88
+    |
+308 | ...   selected matches Some(v) ==> self@.dom().filter(|x: K::V| exists|t: K| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == ...
+    |                                                                              ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:168:43
+    |
+168 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:168:79
+    |
+168 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                               ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:178:42
+    |
+178 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:178:78
+    |
+178 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:188:49
+    |
+188 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:188:77
+    |
+188 | ...   predecessor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                                                                   ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:198:47
+    |
+198 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:198:75
+    |
+198 | ...   successor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                                                                 ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:213:17
+    |
+213 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@;
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:213:27
+    |
+213 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@;
+    |                           ^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:235:55
+    |
+235 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:235:68
+    |
+235 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                    ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:245:69
+    |
+245 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:245:82
+    |
+245 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:259:17
+    |
+259 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.1@.contains(x);
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:259:27
+    |
+259 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.1@.contains(x);
+    |                           ^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:810:17
+    |
+810 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:810:27
+    |
+810 |                 forall|x| old(self)@.contains(x) ==> split.0@.contains(x) || split.2@.contains(x) || x == k@,
+    |                           ^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:891:55
+    |
+891 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len(),
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:891:68
+    |
+891 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len(),
+    |                                                                    ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:915:69
+    |
+915 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int,
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:915:82
+    |
+915 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int,
+    |                                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:375:43
+    |
+375 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t),
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:375:79
+    |
+375 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t),
+    |                                                                               ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:446:21
+    |
+446 |                     assert forall|t: T| self@.contains(t@)
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:447:33
+    |
+447 |                         implies TotalOrder::le(min_val, t) by {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:466:42
+    |
+466 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v),
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:466:78
+    |
+466 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v),
+    |                                                                              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:537:21
+    |
+537 |                     assert forall|t: T| self@.contains(t@)
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:538:33
+    |
+538 |                         implies TotalOrder::le(t, max_val) by {
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:660:21
+    |
+660 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:660:56
+    |
+660 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@
+    |                                                        ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetStEph.rs:782:21
+    |
+782 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetStEph.rs:782:56
+    |
+782 |                     assert forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@
+    |                                                        ^^
+
+note: automatically chose triggers for this expression:
+    --> src/Chap43/OrderedSetStEph.rs:1027:17
+     |
+1027 |                 assert forall|x| old_view.contains(x)
+     |                 ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/Chap43/OrderedSetStEph.rs:1027:34
+     |
+1027 |                 assert forall|x| old_view.contains(x)
+     |                                  ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:164:43
+    |
+164 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:164:79
+    |
+164 |                 first matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(v, t);
+    |                                                                               ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:173:42
+    |
+173 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:173:78
+    |
+173 |                 last matches Some(v) ==> forall|t: T| self@.contains(t@) ==> TotalOrder::le(t, v);
+    |                                                                              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:182:49
+    |
+182 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:182:77
+    |
+182 | ...   predecessor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(t, *k) && t@ != k@ ==> TotalOrder::le(t, v);
+    |                                                                   ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:191:47
+    |
+191 | ...ches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:191:75
+    |
+191 | ...   successor matches Some(v) ==> forall|t: T| self@.contains(t@) && TotalOrder::le(*k, t) && t@ != k@ ==> TotalOrder::le(v, t);
+    |                                                                 ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:212:55
+    |
+212 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:212:68
+    |
+212 |                 rank as int == self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, *k) && t@ != k@).len();
+    |                                                                    ^^
+
+note: automatically chose triggers for this expression:
+   --> src/Chap43/OrderedSetMtEph.rs:221:69
+    |
+221 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/Chap43/OrderedSetMtEph.rs:221:82
+    |
+221 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                                        ^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> src/Chap43/OrderedSetMtEph.rs:221:69
+    |
+221 | ...   selected matches Some(v) ==> self@.filter(|x: T::V| exists|t: T| t@ == x && TotalOrder::le(t, v) && t@ != v@).len() == i as int;
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+verification results:: 4265 verified, 0 errors
+	Command being timed: "/home/milnes/projects/verus-lang/source/target-verus/release/rust_verify --crate-type=lib src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8"
+	User time (seconds): 203.57
+	System time (seconds): 12.62
+	Percent of CPU this job got: 375%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:57.53
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5966916
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3363745
+	Voluntary context switches: 3611228
+	Involuntary context switches: 6267
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

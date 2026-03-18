@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# verus-heaptrack — Run heaptrack on rust_verify, bypassing the verus launcher.
+#
+# The verus binary exec's through rustup, which breaks heaptrack's LD_PRELOAD
+# interception. This script invokes rust_verify directly with the correct
+# toolchain library path.
+#
+# Usage:
+#   verus-heaptrack <source-file> [verus-args...]
+#
+# Example:
+#   cd ~/projects/APAS-VERUS
+#   ~/projects/verus-heaptrack/scripts/verus-heaptrack src/lib.rs \
+#       --multiple-errors 20 --expand-errors --num-threads 8
+
+set -euo pipefail
+
+# Configuration — adjust these if your verus install differs.
+VERUS_ROOT="${VERUS_ROOT:-$HOME/projects/verus/source/target-verus/release}"
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.93.1-x86_64-unknown-linux-gnu}"
+TOOLCHAIN_LIB="$HOME/.rustup/toolchains/${TOOLCHAIN}/lib"
+
+RUST_VERIFY="${VERUS_ROOT}/rust_verify"
+Z3_PATH="${VERUS_ROOT}/z3"
+
+# Sanity checks.
+if [ $# -lt 1 ]; then
+    echo "Usage: verus-heaptrack <source-file> [verus-args...]" >&2
+    exit 1
+fi
+
+if [ ! -x "$RUST_VERIFY" ]; then
+    echo "error: rust_verify not found at $RUST_VERIFY" >&2
+    echo "Set VERUS_ROOT to the directory containing the rust_verify binary." >&2
+    exit 1
+fi
+
+if [ ! -d "$TOOLCHAIN_LIB" ]; then
+    echo "error: toolchain lib not found at $TOOLCHAIN_LIB" >&2
+    echo "Install the toolchain: rustup install $TOOLCHAIN" >&2
+    echo "Or set VERUS_TOOLCHAIN to the correct version." >&2
+    exit 1
+fi
+
+if ! command -v heaptrack &>/dev/null; then
+    echo "error: heaptrack not found. Install it:" >&2
+    echo "  sudo apt install heaptrack heaptrack-gui" >&2
+    exit 1
+fi
+
+SOURCE_FILE="$1"
+shift
+
+echo "verus-heaptrack: profiling rust_verify on $SOURCE_FILE"
+echo "  rust_verify: $RUST_VERIFY"
+echo "  toolchain:   $TOOLCHAIN"
+echo "  z3:          $Z3_PATH"
+echo ""
+
+exec env \
+    LD_LIBRARY_PATH="$TOOLCHAIN_LIB" \
+    VSTD_KIND=Imported \
+    VERUS_Z3_PATH="$Z3_PATH" \
+    RUSTC_BOOTSTRAP=1 \
+    heaptrack "$RUST_VERIFY" \
+        --crate-type=lib "$SOURCE_FILE" \
+        "$@"

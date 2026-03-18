@@ -1,0 +1,130 @@
+#!/bin/bash
+#
+# verus-benchmark — Measure peak RSS and wall time for rust_verify,
+# with and without patches, without heaptrack overhead.
+#
+# Runs rust_verify directly (bypassing the verus launcher) under /usr/bin/time
+# to capture peak RSS. No heaptrack, no profiling overhead.
+#
+# Usage:
+#   verus-benchmark <source-file> [verus-args...]
+#
+# Environment:
+#   VERUS_ROOT       Path to target-verus/release/ (default: ~/projects/verus/source/target-verus/release)
+#   VERUS_TOOLCHAIN  Rust toolchain version (default: 1.93.1-x86_64-unknown-linux-gnu)
+#   BENCHMARK_LABEL  Label for this run (default: "baseline" or "patched")
+#   BENCHMARK_RUNS   Number of runs (default: 3)
+#
+# Example — compare baseline vs patched:
+#   # Baseline (unpatched verus):
+#   BENCHMARK_LABEL=baseline verus-benchmark src/lib.rs --num-threads 8
+#
+#   # Patched:
+#   VERUS_ROOT=~/projects/verus-patched/source/target-verus/release \
+#   BENCHMARK_LABEL=patched verus-benchmark src/lib.rs --num-threads 8
+
+set -euo pipefail
+
+VERUS_ROOT="${VERUS_ROOT:-$HOME/projects/verus/source/target-verus/release}"
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.93.1-x86_64-unknown-linux-gnu}"
+TOOLCHAIN_LIB="$HOME/.rustup/toolchains/${TOOLCHAIN}/lib"
+LABEL="${BENCHMARK_LABEL:-run}"
+RUNS="${BENCHMARK_RUNS:-3}"
+
+RUST_VERIFY="${VERUS_ROOT}/rust_verify"
+Z3_PATH="${VERUS_ROOT}/z3"
+
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+RESULTS_DIR="${SCRIPT_DIR}/results"
+mkdir -p "$RESULTS_DIR"
+
+RESULTS_FILE="${RESULTS_DIR}/benchmark-${LABEL}-$(date +%Y%m%d-%H%M%S).txt"
+
+if [ $# -lt 1 ]; then
+    echo "Usage: verus-benchmark <source-file> [verus-args...]" >&2
+    exit 1
+fi
+
+if [ ! -x "$RUST_VERIFY" ]; then
+    echo "error: rust_verify not found at $RUST_VERIFY" >&2
+    exit 1
+fi
+
+if ! command -v /usr/bin/time &>/dev/null; then
+    echo "error: /usr/bin/time not found (need GNU time, not shell builtin)" >&2
+    exit 1
+fi
+
+SOURCE_FILE="$1"
+shift
+
+echo "=== verus-benchmark: $LABEL ==="
+echo "  rust_verify: $RUST_VERIFY"
+echo "  source:      $SOURCE_FILE"
+echo "  runs:        $RUNS"
+echo "  results:     $RESULTS_FILE"
+echo ""
+
+{
+    echo "verus-benchmark results"
+    echo "======================"
+    echo "label:        $LABEL"
+    echo "rust_verify:  $RUST_VERIFY"
+    echo "source:       $SOURCE_FILE"
+    echo "toolchain:    $TOOLCHAIN"
+    echo "extra args:   $*"
+    echo "date:         $(date -Iseconds)"
+    echo "verus commit: $(cd "$VERUS_ROOT/../.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo unknown)"
+    echo ""
+} > "$RESULTS_FILE"
+
+for i in $(seq 1 "$RUNS"); do
+    echo "--- Run $i/$RUNS ---"
+
+    # Flush filesystem caches (if root). Not required but improves consistency.
+    sync
+
+    TIMEFORMAT_FILE=$(mktemp)
+
+    # Run rust_verify under /usr/bin/time -v to get peak RSS.
+    # Capture time's stderr (which has the stats) separately.
+    set +e
+    /usr/bin/time -v env \
+        LD_LIBRARY_PATH="$TOOLCHAIN_LIB" \
+        VSTD_KIND=Imported \
+        VERUS_Z3_PATH="$Z3_PATH" \
+        RUSTC_BOOTSTRAP=1 \
+        "$RUST_VERIFY" \
+            --crate-type=lib "$SOURCE_FILE" \
+            "$@" \
+        > /dev/null 2> "$TIMEFORMAT_FILE"
+    EXIT_CODE=$?
+    set -e
+
+    # Extract key metrics from GNU time output.
+    WALL_TIME=$(grep "Elapsed (wall clock)" "$TIMEFORMAT_FILE" | sed 's/.*: //')
+    PEAK_RSS=$(grep "Maximum resident" "$TIMEFORMAT_FILE" | sed 's/.*: //')
+    USER_TIME=$(grep "User time" "$TIMEFORMAT_FILE" | sed 's/.*: //')
+    SYS_TIME=$(grep "System time" "$TIMEFORMAT_FILE" | sed 's/.*: //')
+
+    echo "  wall time:  $WALL_TIME"
+    echo "  peak RSS:   ${PEAK_RSS} KB"
+    echo "  user time:  $USER_TIME"
+    echo "  sys time:   $SYS_TIME"
+    echo "  exit code:  $EXIT_CODE"
+    echo ""
+
+    {
+        echo "run $i"
+        echo "  wall_time:  $WALL_TIME"
+        echo "  peak_rss_kb: $PEAK_RSS"
+        echo "  user_time:  $USER_TIME"
+        echo "  sys_time:   $SYS_TIME"
+        echo "  exit_code:  $EXIT_CODE"
+        echo ""
+    } >> "$RESULTS_FILE"
+
+    rm -f "$TIMEFORMAT_FILE"
+done
+
+echo "Results saved to $RESULTS_FILE"
