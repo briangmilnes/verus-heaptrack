@@ -1,0 +1,42 @@
+Allocator comparison: Wed Mar 18 09:46:10 AM PDT 2026
+rust_verify: /home/milnes/projects/verus-lang/source/target-verus/release/rust_verify
+args: --crate-type=lib src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8
+cwd: /home/milnes/projects/APAS-VERUS
+
+========================================
+TEST: glibc malloc (default)
+========================================
+Started: Wed Mar 18 09:46:10 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 369%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:08.31
+	Maximum resident set size (kbytes): 6003472
+Finished: Wed Mar 18 09:47:19 AM PDT 2026
+
+========================================
+TEST: glibc malloc (MALLOC_ARENA_MAX=2)
+========================================
+Started: Wed Mar 18 09:47:19 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 394%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:18.56
+	Maximum resident set size (kbytes): 5958996
+Finished: Wed Mar 18 09:48:37 AM PDT 2026
+
+========================================
+TEST: jemalloc (LD_PRELOAD)
+========================================
+Started: Wed Mar 18 09:48:37 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 370%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:09.79
+	Maximum resident set size (kbytes): 5403788
+Finished: Wed Mar 18 09:49:47 AM PDT 2026
+
+========================================
+SUMMARY
+========================================
+	Maximum resident set size (kbytes): 6003472
+	Maximum resident set size (kbytes): 5958996
+	Maximum resident set size (kbytes): 5403788
+

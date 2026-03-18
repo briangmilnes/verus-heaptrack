@@ -1,0 +1,59 @@
+Allocator comparison: Wed Mar 18 09:58:17 AM PDT 2026
+rust_verify: /home/milnes/projects/verus-lang/source/target-verus/release/rust_verify
+args: --crate-type=lib src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8
+cwd: /home/milnes/projects/APAS-VERUS
+
+WARMUP: priming filesystem caches...
+verification results:: 4282 verified, 0 errors
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:00.67
+	Maximum resident set size (kbytes): 6023044
+
+========================================
+TEST: glibc malloc (default)
+========================================
+Started: Wed Mar 18 09:59:18 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 371%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:00.02
+	Maximum resident set size (kbytes): 6020900
+Finished: Wed Mar 18 10:00:18 AM PDT 2026
+
+========================================
+TEST: glibc malloc (MALLOC_ARENA_MAX=2)
+========================================
+Started: Wed Mar 18 10:00:18 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 396%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:08.21
+	Maximum resident set size (kbytes): 5968284
+Finished: Wed Mar 18 10:01:26 AM PDT 2026
+
+========================================
+TEST: jemalloc (LD_PRELOAD)
+========================================
+Started: Wed Mar 18 10:01:26 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 387%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:52.47
+	Maximum resident set size (kbytes): 5397196
+Finished: Wed Mar 18 10:02:19 AM PDT 2026
+
+========================================
+TEST: jemalloc (narenas:2)
+========================================
+Started: Wed Mar 18 10:02:19 AM PDT 2026
+verification results:: 4282 verified, 0 errors
+	Percent of CPU this job got: 389%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:52.90
+	Maximum resident set size (kbytes): 5306864
+Finished: Wed Mar 18 10:03:12 AM PDT 2026
+
+========================================
+SUMMARY
+========================================
+	Maximum resident set size (kbytes): 6023044
+	Maximum resident set size (kbytes): 6020900
+	Maximum resident set size (kbytes): 5968284
+	Maximum resident set size (kbytes): 5397196
+	Maximum resident set size (kbytes): 5306864
+

@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+#
+# Compare peak RSS of rust_verify under different allocators.
+#
+# Usage:
+#   allocator-compare [verus-args...]
+#
+# Example:
+#   cd ~/projects/APAS-VERUS
+#   ~/projects/verus-heaptrack/scripts/allocator-compare \
+#       --crate-type=lib src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8
+#
+# Runs four configurations:
+#   1. glibc malloc (default)
+#   2. glibc malloc with MALLOC_ARENA_MAX=2
+#   3. jemalloc via LD_PRELOAD (default arenas)
+#   4. jemalloc via LD_PRELOAD with narenas:2
+#
+# Results are written to ~/projects/verus-heaptrack/results/allocator-compare-<timestamp>.txt
+
+set -euo pipefail
+
+VERUS_ROOT="${VERUS_ROOT:-$HOME/projects/verus-lang/source/target-verus/release}"
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.93.1-x86_64-unknown-linux-gnu}"
+RUST_VERIFY="${VERUS_ROOT}/rust_verify"
+LD_LIB="$HOME/.rustup/toolchains/${TOOLCHAIN}/lib"
+Z3_PATH="${VERUS_ROOT}/z3"
+JEMALLOC="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
+RESULTS_DIR="$HOME/projects/verus-heaptrack/results"
+
+if [ ! -x "$RUST_VERIFY" ]; then
+    echo "ERROR: rust_verify not found at $RUST_VERIFY" >&2
+    exit 1
+fi
+
+if [ ! -f "$JEMALLOC" ]; then
+    echo "WARNING: jemalloc not found at $JEMALLOC — skipping jemalloc test" >&2
+    echo "  Install with: sudo apt install libjemalloc2" >&2
+    SKIP_JEMALLOC=1
+else
+    SKIP_JEMALLOC=0
+fi
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTFILE="${RESULTS_DIR}/allocator-compare-${TIMESTAMP}.txt"
+mkdir -p "$RESULTS_DIR"
+
+VERUS_ARGS=("$@")
+if [ ${#VERUS_ARGS[@]} -eq 0 ]; then
+    echo "ERROR: no verus arguments provided" >&2
+    echo "Usage: allocator-compare [verus-args...]" >&2
+    exit 1
+fi
+
+echo "Allocator comparison: $(date)" | tee "$OUTFILE"
+echo "rust_verify: $RUST_VERIFY" | tee -a "$OUTFILE"
+echo "args: ${VERUS_ARGS[*]}" | tee -a "$OUTFILE"
+echo "cwd: $(pwd)" | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
+
+run_test() {
+    local label="$1"
+    shift
+    echo "========================================" | tee -a "$OUTFILE"
+    echo "TEST: $label" | tee -a "$OUTFILE"
+    echo "========================================" | tee -a "$OUTFILE"
+    echo "Started: $(date)" | tee -a "$OUTFILE"
+
+    # Run and capture only the /usr/bin/time output + verification results line
+    {
+        /usr/bin/time -v env \
+            LD_LIBRARY_PATH="$LD_LIB" \
+            VSTD_KIND=Imported \
+            VERUS_Z3_PATH="$Z3_PATH" \
+            RUSTC_BOOTSTRAP=1 \
+            "$@" \
+            "$RUST_VERIFY" "${VERUS_ARGS[@]}" 2>&1
+    } | grep -E "verification results|Maximum resident|wall clock|Percent of CPU" | tee -a "$OUTFILE"
+
+    echo "Finished: $(date)" | tee -a "$OUTFILE"
+    echo "" | tee -a "$OUTFILE"
+}
+
+# Warmup: prime filesystem caches so all tests start equally warm
+echo "WARMUP: priming filesystem caches..." | tee -a "$OUTFILE"
+{
+    /usr/bin/time -v env \
+        LD_LIBRARY_PATH="$LD_LIB" \
+        VSTD_KIND=Imported \
+        VERUS_Z3_PATH="$Z3_PATH" \
+        RUSTC_BOOTSTRAP=1 \
+        "$RUST_VERIFY" "${VERUS_ARGS[@]}" 2>&1
+} | grep -E "verification results|Maximum resident|wall clock" | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
+
+# Test 1: glibc default
+run_test "glibc malloc (default)"
+
+# Test 2: glibc with limited arenas
+run_test "glibc malloc (MALLOC_ARENA_MAX=2)" \
+    env MALLOC_ARENA_MAX=2
+
+# Test 3: jemalloc (default arenas)
+if [ "$SKIP_JEMALLOC" -eq 0 ]; then
+    run_test "jemalloc (LD_PRELOAD)" \
+        env LD_PRELOAD="$JEMALLOC"
+fi
+
+# Test 4: jemalloc with narenas:2
+if [ "$SKIP_JEMALLOC" -eq 0 ]; then
+    run_test "jemalloc (narenas:2)" \
+        env LD_PRELOAD="$JEMALLOC" MALLOC_CONF=narenas:2
+fi
+
+echo "========================================" | tee -a "$OUTFILE"
+echo "SUMMARY" | tee -a "$OUTFILE"
+echo "========================================" | tee -a "$OUTFILE"
+grep -E "^TEST:|Maximum resident" "$OUTFILE" | tee -a /dev/null
+# Re-extract for clean summary
+grep -B1 "Maximum resident" "$OUTFILE" | grep -E "TEST:|Maximum" | tee -a "$OUTFILE"
+
+echo "" | tee -a "$OUTFILE"
+echo "Results saved to: $OUTFILE"
