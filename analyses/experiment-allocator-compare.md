@@ -134,6 +134,27 @@ ecosystem (TiKV, Servo, ripgrep, Deno, etc.) and is well-maintained.
 The `narenas:2` tuning could be set via `_rjem_malloc_conf` (a link-time
 symbol) or left to users via `MALLOC_CONF`.
 
+## Cross-Project Validation
+
+Benchmarked 6 verita fixture projects to confirm the effect is not APAS-VERUS-specific.
+Each project ran 5 configs (warmup, glibc, glibc arena=2, jemalloc, jemalloc narenas:2).
+Verus `f04abf70` (toolchain 1.94.0, `--features singular`). All runs on a quiet machine.
+
+| # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
+|---|---------|----------|----------|----------|-------|---------|---------|--------|
+| 1 | human-eval | 292 | 614 | 537 | -13% | 5.4s | 5.1s | -4% |
+| 2 | ironkv | 319 | 783 | 706 | -10% | 5.4s | 5.1s | -5% |
+| 3 | node-replication | 254 | 957 | 854 | -11% | 6.5s | 5.5s | -14% |
+| 4 | vest | 496 | 648 | 565 | -13% | 5.7s | 5.2s | -9% |
+| 5 | memory-allocator | 731 | 1,629 | 1,416 | -13% | 38.7s | 35.2s | -9% |
+| 6 | APAS-VERUS | 4,265 | 5,822 | 5,143 | -12% | 59.2s | 53.2s | -10% |
+| | **Average** | | | | **-12%** | | | **-9%** |
+
+The effect is consistent across all project sizes (537 MB to 5.8 GB). jemalloc narenas:2
+wins on both RSS and wall time in every case.
+
+Per-project results: `results/benchmark-all-20260318-123432/`
+
 ## Raw Data
 
 - Clean run: `results/allocator-compare-20260318-095817.txt`
