@@ -94,20 +94,19 @@ overhead comes from:
 Reducing the number of small allocations (Plan 2: path interning eliminates
 5M allocations) would improve utilization under either allocator.
 
-## Comparison with code-level optimizations
+## Additional code-level optimizations (on top of jemalloc)
 
-| # | Approach | RSS saved | Wall time | Code changes |
-|---|----------|-----------|-----------|-------------|
-| 1 | jemalloc narenas:2 | 714 MB | -7.1s (-12%) | 0 lines |
-| 2 | Plan 2: intern paths | ~176 MB heap + fragmentation | neutral | ~20 lines |
-| 3 | Plan 3: pre-compute SST | ~150 MB heap + fragmentation | neutral | ~110 lines |
-| 4 | Plans 2+3 | ~305 MB heap + fragmentation | neutral | ~130 lines |
-| 5 | jemalloc + Plans 2+3 | ~1 GB (estimated) | -12% | ~130 lines |
+Starting from jemalloc narenas:2 as baseline (5.06 GB RSS, 52.9s wall time):
 
-Path interning (Plan 2) would have an outsized effect on RSS because
-eliminating 5M small allocations reduces fragmentation, not just live heap.
-The RSS savings could be 2-3x the raw 176 MB heap savings. Combined with
-jemalloc narenas:2, the total reduction could approach 1 GB.
+| # | Approach | Additional RSS saved | Wall time | Code changes |
+|---|----------|---------------------|-----------|-------------|
+| 1 | Intern paths | ~176 MB heap + fragmentation | neutral | ~20 lines |
+| 2 | Pre-compute SST | ~150 MB heap + fragmentation | neutral | ~110 lines |
+| 3 | Both | ~305 MB heap + fragmentation | neutral | ~130 lines |
+
+Path interning would have an outsized effect on RSS because eliminating 5M
+small allocations reduces fragmentation, not just live heap. The RSS savings
+could be 2-3x the raw 176 MB heap savings.
 
 ## Recommendations
 
