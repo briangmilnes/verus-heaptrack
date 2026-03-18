@@ -2,42 +2,43 @@
 
 **Date:** 2026-03-18
 **Verus commit:** `f04abf70` (toolchain 1.94.0, `--features singular`)
-**LOC tool:** `veracity-count-loc -l Verus` (with double-count fix)
 
-## Line Categories
+## Results
 
-Counted by `veracity-count-loc -l Verus`. Each line is classified into exactly one category
-(no double counting). Lines not matching any category (blanks, comments, imports, attributes)
-are uncategorized and included only in the Total column.
+glibc default vs jemalloc `narenas:2` on 6 Verus projects, quiet machine:
 
-| Abbrev | Column | What it counts |
-|--------|--------|----------------|
-| LOS | Spec | `spec fn` bodies, `open spec fn` bodies, `requires`, `ensures`, `recommends`, `invariant`, `decreases` clauses — regardless of whether they appear on spec, proof, or exec functions |
-| LOP | Proof | `proof fn` bodies (excluding their requires/ensures), `proof { }` blocks inside exec functions, `assert`, `assume`, `reveal`, `let ghost`, `let tracked` |
-| LOE | Exec | `fn` bodies (excluding requires/ensures/proof blocks) — executable code: `let`, `if`, `match`, `while`, `for`, `return`, assignments, function calls |
-| LOR | Rust | Lines outside `verus! { }` blocks — plain Rust code not under Verus verification |
+| # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
+|---|---------|----------|----------|----------|-------|---------|---------|--------|
+| 1 | human-eval | 292 | 614 | 537 | -13% | 5.4s | 5.1s | -4% |
+| 2 | ironkv | 319 | 783 | 706 | -10% | 5.4s | 5.1s | -5% |
+| 3 | node-replication | 254 | 957 | 854 | -11% | 6.5s | 5.5s | -14% |
+| 4 | vest | 496 | 648 | 565 | -13% | 5.7s | 5.2s | -9% |
+| 5 | memory-allocator | 731 | 1,629 | 1,416 | -13% | 38.7s | 35.2s | -9% |
+| 6 | APAS-VERUS | 4,265 | 5,822 | 5,143 | -12% | 59.2s | 53.2s | -10% |
+| | **Average** | | | | **-12%** | | | **-9%** |
 
-## Fixture Inventory
+Per-project raw data: `results/benchmark-all-20260318-123432/`
+
+## Benchmark Systems
 
 All fixtures are shallow clones (`--depth 1`) in `tests/fixtures/`.
 APAS-VERUS counted with `-e experiments -e attic`.
 
-| # | Project | Repo | Spec (LOS) | Proof (LOP) | Exec (LOE) | Rust (LOR) | Total | Files | Verified | Bench |
-|---|---------|------|------|-------|------|------|-------|-------|----------|-------|
-| 1 | human-eval | secure-foundations/human-eval-verus | 1,694 | 1,000 | 4,574 | 7,092 | 22,498 | 265 | 292 | yes |
-| 2 | ironkv | verus-lang/verified-ironkv | 2,650 | 2,347 | 2,993 | 367 | 10,924 | 34 | 319 | yes |
-| 3 | node-replication | verus-lang/verified-node-replication | 2,696 | 1,773 | 2,741 | 850 | 11,483 | 18 | 254 | yes |
-| 4 | memory-allocator | verus-lang/verified-memory-allocator | 5,290 | 5,801 | 5,709 | 1,670 | 24,381 | 28 | 731 | yes |
-| 5 | vest | secure-foundations/vest | 1,721 | 1,863 | 1,567 | 256 | 10,720 | 23 | 496 | yes |
-| 6a | verified-storage/pmemlog | microsoft/verified-storage | 1,178 | 667 | 505 | 79 | 3,228 | 9 | 81 | no |
-| 6b | verified-storage/multilog | microsoft/verified-storage | 2,590 | 1,037 | 2,701 | 2,501 | 13,244 | 24 | 167 | no |
-| 6c | verified-storage/capybarakv | microsoft/verified-storage | 9,333 | 4,048 | 6,762 | 3,328 | 35,153 | 96 | 725 | no |
-| 7 | APAS-VERUS | briangmilnes/APAS-VERUS | 22,640 | 29,968 | 53,120 | 9,664 | 151,464 | 303 | 4,265 | yes |
+| # | Project | Repo | Spec (LOS) | Proof (LOP) | Exec (LOE) | Rust (LOR) | Total | Files | Verified |
+|---|---------|------|------|-------|------|------|-------|-------|----------|
+| 1 | human-eval | secure-foundations/human-eval-verus | 1,694 | 1,000 | 4,574 | 7,092 | 22,498 | 265 | 292 |
+| 2 | ironkv | verus-lang/verified-ironkv | 2,650 | 2,347 | 2,993 | 367 | 10,924 | 34 | 319 |
+| 3 | node-replication | verus-lang/verified-node-replication | 2,696 | 1,773 | 2,741 | 850 | 11,483 | 18 | 254 |
+| 4 | memory-allocator | verus-lang/verified-memory-allocator | 5,290 | 5,801 | 5,709 | 1,670 | 24,381 | 28 | 731 |
+| 5 | vest | secure-foundations/vest | 1,721 | 1,863 | 1,567 | 256 | 10,720 | 23 | 496 |
+| 6a | verified-storage/pmemlog | microsoft/verified-storage | 1,178 | 667 | 505 | 79 | 3,228 | 9 | 81 |
+| 6b | verified-storage/multilog | microsoft/verified-storage | 2,590 | 1,037 | 2,701 | 2,501 | 13,244 | 24 | 167 |
+| 6c | verified-storage/capybarakv | microsoft/verified-storage | 9,333 | 4,048 | 6,762 | 3,328 | 35,153 | 96 | 725 |
+| 7 | APAS-VERUS | briangmilnes/APAS-VERUS | 22,640 | 29,968 | 53,120 | 9,664 | 151,464 | 303 | 4,265 |
 
-**Bench column:** verified-storage (6a/6b/6c) requires `cargo verus focus` which spawns
-`rust_verify` as a child process. `/usr/bin/time -v` reports peak RSS across the entire
-process tree, so we cannot isolate `rust_verify`'s memory usage from cargo's build
-processes. The other 6 projects use direct `rust_verify` invocation.
+verified-storage (6a/6b/6c) requires `cargo verus focus` which spawns `rust_verify` as
+a child process. `/usr/bin/time -v` reports peak RSS across the entire process tree, so
+we cannot isolate `rust_verify`'s memory usage from cargo's build processes.
 
 **APAS-VERUS size notes:** APAS-VERUS is a teaching tool where each algorithm is implemented
 in up to four variants: single-threaded persistent, single-threaded ephemeral, multi-threaded
@@ -51,7 +52,19 @@ remove dead code, unused modules, or duplicated proof infrastructure.
 |   | Spec (LOS) | Proof (LOP) | Exec (LOE) | Rust (LOR) | Total | Files | Verified |
 |---|------|-------|------|------|-------|-------|----------|
 | All fixtures | 49,792 | 48,504 | 80,672 | 25,807 | 283,095 | 800 | 7,330 |
-| All except APAS-VERUS | 27,152 | 18,536 | 27,552 | 16,143 | 131,631 | 497 | 3,065 |
+
+## Line Categories
+
+Counted by `veracity-count-loc -l Verus`. Each line is classified into exactly one category
+(no double counting). Lines not matching any category (blanks, comments, imports, attributes)
+are uncategorized and included only in the Total column.
+
+| Abbrev | Column | What it counts |
+|--------|--------|----------------|
+| LOS | Spec | `spec fn` bodies, `open spec fn` bodies, `requires`, `ensures`, `recommends`, `invariant`, `decreases` clauses |
+| LOP | Proof | `proof fn` bodies (excluding their requires/ensures), `proof { }` blocks inside exec functions, `assert`, `assume`, `reveal`, `let ghost`, `let tracked` |
+| LOE | Exec | `fn` bodies (excluding requires/ensures/proof blocks) — executable code |
+| LOR | Rust | Lines outside `verus! { }` blocks — plain Rust code not under Verus verification |
 
 ## Validation Status
 
@@ -71,8 +84,6 @@ All fixtures verified clean against Verus `f04abf70` (1.94.0).
 
 ## Prerequisites
 
-Installed to unblock all fixtures:
-
 - **rustc 1.94.0**: `rustup install 1.94.0` (for cargo verus + published vstd)
 - **Singular**: `sudo apt install singular` (for integer_ring proofs)
 - **libpmem-dev**: `sudo apt install libpmem-dev` (for verified-storage pmem bindings)
@@ -84,18 +95,6 @@ Verus built with: `vargo build --release --features singular`
 
 APAS-VERUS is the largest fixture, with more proof lines (29,968) than all other fixtures
 combined (18,536) and more verified functions (4,265 vs 3,065 combined).
-
-The proof-to-exec ratio varies dramatically:
-
-| # | Project | LOP/LOE ratio | Character |
-|---|---------|--------------|-----------|
-| 1 | human-eval | 0.22 | Mostly exec with light proofs |
-| 2 | ironkv | 0.78 | Balanced |
-| 3 | node-replication | 0.65 | Balanced |
-| 4 | memory-allocator | 1.02 | Balanced proof/exec |
-| 5 | vest | 1.19 | Proof-heavy combinators |
-| 6 | verified-storage (combined) | 0.58 | Exec-heavy systems code |
-| 7 | APAS-VERUS | 0.56 | Exec-heavy (algorithms) |
 
 APAS-VERUS is exec-heavy (53K exec vs 30K proof), reflecting the project's focus on
 executable algorithm implementations with accompanying verification.
