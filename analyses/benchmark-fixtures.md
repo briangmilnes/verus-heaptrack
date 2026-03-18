@@ -29,17 +29,22 @@ are uncategorized and included only in the Total column.
 All fixtures are shallow clones (`--depth 1`) in `tests/fixtures/`.
 APAS-VERUS counted with `-e experiments -e attic`.
 
-| # | Project | Repo | Spec (LOS) | Proof (LOP) | Exec (LOE) | Rust (LOR) | Total | Files | Verified |
-|---|---------|------|------|-------|------|------|-------|-------|----------|
-| 1 | human-eval | secure-foundations/human-eval-verus | 1,694 | 1,000 | 4,574 | 7,092 | 22,498 | 265 | 292 |
-| 2 | ironkv | verus-lang/verified-ironkv | 2,650 | 2,347 | 2,993 | 367 | 10,924 | 34 | 319 |
-| 3 | node-replication | verus-lang/verified-node-replication | 2,696 | 1,773 | 2,741 | 850 | 11,483 | 18 | 254 |
-| 4 | memory-allocator | verus-lang/verified-memory-allocator | 5,290 | 5,801 | 5,709 | 1,670 | 24,381 | 28 | 731 |
-| 5 | vest | secure-foundations/vest | 1,721 | 1,863 | 1,567 | 256 | 10,720 | 23 | 496 |
-| 6a | verified-storage/pmemlog | microsoft/verified-storage | 1,178 | 667 | 505 | 79 | 3,228 | 9 | 81 |
-| 6b | verified-storage/multilog | microsoft/verified-storage | 2,590 | 1,037 | 2,701 | 2,501 | 13,244 | 24 | 167 |
-| 6c | verified-storage/capybarakv | microsoft/verified-storage | 9,333 | 4,048 | 6,762 | 3,328 | 35,153 | 96 | 725 |
-| 7 | APAS-VERUS | briangmilnes/APAS-VERUS | 22,640 | 29,968 | 53,120 | 9,664 | 151,464 | 303 | 4,265 |
+| # | Project | Repo | Spec (LOS) | Proof (LOP) | Exec (LOE) | Rust (LOR) | Total | Files | Verified | Bench |
+|---|---------|------|------|-------|------|------|-------|-------|----------|-------|
+| 1 | human-eval | secure-foundations/human-eval-verus | 1,694 | 1,000 | 4,574 | 7,092 | 22,498 | 265 | 292 | yes |
+| 2 | ironkv | verus-lang/verified-ironkv | 2,650 | 2,347 | 2,993 | 367 | 10,924 | 34 | 319 | yes |
+| 3 | node-replication | verus-lang/verified-node-replication | 2,696 | 1,773 | 2,741 | 850 | 11,483 | 18 | 254 | yes |
+| 4 | memory-allocator | verus-lang/verified-memory-allocator | 5,290 | 5,801 | 5,709 | 1,670 | 24,381 | 28 | 731 | yes |
+| 5 | vest | secure-foundations/vest | 1,721 | 1,863 | 1,567 | 256 | 10,720 | 23 | 496 | yes |
+| 6a | verified-storage/pmemlog | microsoft/verified-storage | 1,178 | 667 | 505 | 79 | 3,228 | 9 | 81 | no |
+| 6b | verified-storage/multilog | microsoft/verified-storage | 2,590 | 1,037 | 2,701 | 2,501 | 13,244 | 24 | 167 | no |
+| 6c | verified-storage/capybarakv | microsoft/verified-storage | 9,333 | 4,048 | 6,762 | 3,328 | 35,153 | 96 | 725 | no |
+| 7 | APAS-VERUS | briangmilnes/APAS-VERUS | 22,640 | 29,968 | 53,120 | 9,664 | 151,464 | 303 | 4,265 | yes |
+
+**Bench column:** verified-storage (6a/6b/6c) requires `cargo verus focus` which spawns
+`rust_verify` as a child process. `/usr/bin/time -v` reports peak RSS across the entire
+process tree, so we cannot isolate `rust_verify`'s memory usage from cargo's build
+processes. The other 6 projects use direct `rust_verify` invocation.
 
 **APAS-VERUS size notes:** APAS-VERUS is a teaching tool where each algorithm is implemented
 in up to four variants: single-threaded persistent, single-threaded ephemeral, multi-threaded
