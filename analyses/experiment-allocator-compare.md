@@ -14,12 +14,10 @@ table { width: 100% !important; table-layout: fixed; }
 
 ## Motivation
 
-heaptrack reports 1.38 GB peak heap for rust_verify, but `top` shows the
-process at ~5.7 GB RSS. The 4.3 GB gap is caused by glibc malloc
-fragmentation: rust_verify makes 5M+ small Arc allocations (16-400 bytes)
-intermixed with 12M+ temporary Vec growth allocations, leaving glibc's
-per-thread arenas full of freed-but-resident pages. glibc does not return
-these pages to the OS.
+heaptrack reports 1.38 GB peak heap for rust_verify, but `top` shows
+~5.7 GB RSS. The 4.3 GB gap is glibc malloc arena overhead on
+rust_verify's allocation pattern (5M+ small Arc objects, 12M+ temporary
+Vec growths).
 
 ## Method
 
@@ -47,52 +45,11 @@ All runs: 4282 verified, 0 errors.
 
 ## Analysis
 
-### jemalloc saves 624-714 MB and is 13% faster
-
 jemalloc with default arenas reduces peak RSS by 624 MB (10.3%) and wall
 time by 7.6 seconds (13%). With `narenas:2`, the savings increase to
-714 MB (11.9%) with no additional time penalty.
-
-jemalloc wins on both axes because its size-class segregation handles the
-millions of small Arc allocations more efficiently than glibc:
-
-- **Less fragmentation**: freed objects return to size-class slabs, not
-  general-purpose free lists. Pages can be recycled sooner.
-- **Better cache locality**: the allocator's own data structures are
-  smaller and more cache-friendly, reducing overhead on the hot allocation
-  path.
-
-### jemalloc narenas:2 saves an extra 90 MB over default jemalloc
-
-Limiting jemalloc to 2 arenas (vs the default, typically 4x CPU count)
-saves an additional 90 MB without hurting wall time. With only 2 arenas,
-there is less per-arena overhead and less memory held in per-arena caches.
-jemalloc's lock-free fast path means the reduced arena count does not
-cause contention — unlike glibc.
-
-### glibc MALLOC_ARENA_MAX=2 is counterproductive
-
-Limiting glibc to 2 arenas saves only 52 MB of RSS but adds 8.2 seconds
-(14%) to wall time. glibc's arena locking does not have a fast path — fewer
-arenas means more lock contention. The minimal memory savings are not worth
-the performance cost.
-
-### The fragmentation problem quantified
-
-glibc malloc: 1.38 GB live heap in 5.74 GB resident pages = **24% utilization**.
-jemalloc narenas:2: 1.38 GB live heap in 5.06 GB resident pages = **27% utilization**.
-
-Even jemalloc cannot fully close the gap. The remaining 3.7 GB of RSS
-overhead comes from:
-
-- Allocator metadata and page-level fragmentation (unavoidable with
-  millions of small objects)
-- mmap'd shared libraries (librustc_driver alone is 146 MB on disk)
-- Thread stacks (8 workers + main)
-- Kernel page table overhead
-
-Reducing the number of small allocations (Plan 2: path interning eliminates
-5M allocations) would improve utilization under either allocator.
+714 MB (11.9%) with no additional time penalty. glibc `MALLOC_ARENA_MAX=2`
+saves only 52 MB of RSS but adds 8.2 seconds (14%) to wall time due to
+lock contention.
 
 ## Additional code-level optimizations (on top of jemalloc)
 
@@ -104,9 +61,8 @@ Starting from jemalloc narenas:2 as baseline (5.06 GB RSS, 52.9s wall time):
 | 2 | Pre-compute SST | ~150 MB heap + fragmentation | neutral | ~110 lines |
 | 3 | Both | ~305 MB heap + fragmentation | neutral | ~130 lines |
 
-Path interning would have an outsized effect on RSS because eliminating 5M
-small allocations reduces fragmentation, not just live heap. The RSS savings
-could be 2-3x the raw 176 MB heap savings.
+Path interning eliminates 5M small allocations, so the RSS savings would
+exceed the 176 MB heap reduction.
 
 ## Recommendations
 
