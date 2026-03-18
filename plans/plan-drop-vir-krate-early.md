@@ -1,3 +1,10 @@
+<style>
+body { max-width: 98% !important; width: 98% !important; margin: 0 !important; padding: 1em !important; }
+.markdown-body { max-width: 98% !important; width: 98% !important; }
+.container, .container-lg, .container-xl, main, article { max-width: 98% !important; width: 98% !important; }
+table { width: 100% !important; table-layout: fixed; }
+</style>
+
 # Plan 1: Drop VIR Krate After SST Conversion
 
 **Estimated savings:** ~300 MB (paths 173M + expressions 129M held through Z3)

@@ -1,0 +1,174 @@
+#!/usr/bin/env bash
+#
+# Benchmark all fixture projects: glibc vs jemalloc peak RSS and wall time.
+#
+# Usage:
+#   benchmark-all-projects
+#
+# Runs allocator-compare on each project in tests/fixtures/ that supports
+# direct rust_verify invocation. Projects requiring cargo verus are skipped
+# (their peak RSS can't be isolated from cargo's build processes).
+#
+# Results are written to results/benchmark-all-<timestamp>/
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+FIXTURES="$PROJECT_ROOT/tests/fixtures"
+RESULTS_DIR="$PROJECT_ROOT/results"
+
+VERUS_ROOT="${VERUS_ROOT:-$HOME/projects/verus-lang/source/target-verus/release}"
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.94.0-x86_64-unknown-linux-gnu}"
+RUST_VERIFY="$VERUS_ROOT/rust_verify"
+LD_LIB="$HOME/.rustup/toolchains/$TOOLCHAIN/lib"
+Z3_PATH="$VERUS_ROOT/z3"
+SINGULAR_PATH="$(which Singular 2>/dev/null || true)"
+JEMALLOC="/usr/lib/x86_64-linux-gnu/libjemalloc.so.2"
+
+if [ ! -x "$RUST_VERIFY" ]; then
+    echo "ERROR: rust_verify not found at $RUST_VERIFY" >&2
+    exit 1
+fi
+
+if [ ! -f "$JEMALLOC" ]; then
+    echo "ERROR: jemalloc not found at $JEMALLOC" >&2
+    echo "  Install with: sudo apt install libjemalloc2" >&2
+    exit 1
+fi
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTDIR="$RESULTS_DIR/benchmark-all-$TIMESTAMP"
+mkdir -p "$OUTDIR"
+
+echo "Benchmark all projects: $(date)"
+echo "rust_verify: $RUST_VERIFY"
+echo "toolchain: $TOOLCHAIN"
+echo "jemalloc: $JEMALLOC"
+echo "output: $OUTDIR"
+echo ""
+
+# Run one allocator test: label, outfile, env-prefix..., then verus args
+run_test() {
+    local label="$1"
+    local outfile="$2"
+    local cwd="$3"
+    shift 3
+
+    # Remaining args: env vars to prepend, then -- signals verus args
+    local env_args=()
+    local verus_args=()
+    local in_verus=0
+    for arg in "$@"; do
+        if [ "$arg" = "--" ]; then
+            in_verus=1
+            continue
+        fi
+        if [ "$in_verus" -eq 0 ]; then
+            env_args+=("$arg")
+        else
+            verus_args+=("$arg")
+        fi
+    done
+
+    echo "  $label" | tee -a "$outfile"
+    {
+        cd "$cwd"
+        /usr/bin/time -v env \
+            LD_LIBRARY_PATH="$LD_LIB" \
+            VSTD_KIND=Imported \
+            VERUS_Z3_PATH="$Z3_PATH" \
+            ${SINGULAR_PATH:+VERUS_SINGULAR_PATH="$SINGULAR_PATH"} \
+            RUSTC_BOOTSTRAP=1 \
+            "${env_args[@]}" \
+            "$RUST_VERIFY" "${verus_args[@]}" 2>&1
+    } | grep -E "verification results|Maximum resident|wall clock|Percent of CPU" | tee -a "$outfile"
+    echo "" >> "$outfile"
+}
+
+# Benchmark one project: name, cwd, verus-args...
+benchmark_project() {
+    local name="$1"
+    local cwd="$2"
+    shift 2
+    local verus_args=("$@")
+    local outfile="$OUTDIR/$name.txt"
+
+    echo "========================================"
+    echo "PROJECT: $name"
+    echo "========================================"
+    echo "PROJECT: $name" > "$outfile"
+    echo "Started: $(date)" >> "$outfile"
+    echo "cwd: $cwd" >> "$outfile"
+    echo "args: ${verus_args[*]}" >> "$outfile"
+    echo "" >> "$outfile"
+
+    # Warmup
+    run_test "warmup" "$outfile" "$cwd" -- "${verus_args[@]}"
+
+    # glibc default
+    run_test "glibc" "$outfile" "$cwd" -- "${verus_args[@]}"
+
+    # glibc MALLOC_ARENA_MAX=2
+    run_test "glibc arena=2" "$outfile" "$cwd" MALLOC_ARENA_MAX=2 -- "${verus_args[@]}"
+
+    # jemalloc default
+    run_test "jemalloc" "$outfile" "$cwd" LD_PRELOAD="$JEMALLOC" -- "${verus_args[@]}"
+
+    # jemalloc narenas:2
+    run_test "jemalloc n=2" "$outfile" "$cwd" LD_PRELOAD="$JEMALLOC" MALLOC_CONF=narenas:2 -- "${verus_args[@]}"
+
+    echo "Finished: $(date)" >> "$outfile"
+    echo ""
+}
+
+# Direct rust_verify projects (no cargo verus needed)
+benchmark_project "human-eval" \
+    "$FIXTURES/human-eval" \
+    tasks/lib.rs --crate-type=lib
+
+benchmark_project "ironkv" \
+    "$FIXTURES/ironkv" \
+    ironsht/src/lib.rs --crate-type=lib --no-report-long-running
+
+benchmark_project "node-replication" \
+    "$FIXTURES/node-replication" \
+    verified-node-replication/src/lib.rs --crate-type=dylib
+
+benchmark_project "vest" \
+    "$FIXTURES/vest" \
+    vest/src/lib.rs --crate-type=lib --no-report-long-running
+
+benchmark_project "memory-allocator" \
+    "$FIXTURES/memory-allocator" \
+    verus-mimalloc/lib.rs \
+    --extern "libc=build/liblibc.rlib" \
+    --triggers-mode silent \
+    --rlimit 240
+
+benchmark_project "apas-verus" \
+    "$FIXTURES/apas-verus" \
+    --crate-type=lib src/lib.rs --num-threads 8
+
+# Skipped: verified-storage (6a/6b/6c)
+# These require cargo verus focus, which spawns rust_verify as a child process.
+# /usr/bin/time -v reports peak RSS across the entire process tree (cargo + rustc +
+# rust_verify), so we can't isolate rust_verify's RSS. See plans/plan-benchmark-verita-projects.md
+# for discussion. Revisit when we have a way to extract the direct rust_verify command.
+
+# Summary
+echo "========================================" | tee "$OUTDIR/summary.txt"
+echo "SUMMARY" | tee -a "$OUTDIR/summary.txt"
+echo "========================================" | tee -a "$OUTDIR/summary.txt"
+echo "" | tee -a "$OUTDIR/summary.txt"
+
+for f in "$OUTDIR"/*.txt; do
+    [ "$(basename "$f")" = "summary.txt" ] && continue
+    name=$(basename "$f" .txt)
+    echo "--- $name ---" | tee -a "$OUTDIR/summary.txt"
+    grep -E "glibc|jemalloc|Maximum resident|wall clock" "$f" | tee -a "$OUTDIR/summary.txt"
+    echo "" | tee -a "$OUTDIR/summary.txt"
+done
+
+echo ""
+echo "Results saved to: $OUTDIR"

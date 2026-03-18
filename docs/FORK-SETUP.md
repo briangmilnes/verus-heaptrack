@@ -1,3 +1,10 @@
+<style>
+body { max-width: 98% !important; width: 98% !important; margin: 0 !important; padding: 1em !important; }
+.markdown-body { max-width: 98% !important; width: 98% !important; }
+.container, .container-lg, .container-xl, main, article { max-width: 98% !important; width: 98% !important; }
+table { width: 100% !important; table-layout: fixed; }
+</style>
+
 # Setting Up a Verus Fork for Memory Patches
 
 Step-by-step instructions to set up `briangmilnes/verus-lang` (a fork of

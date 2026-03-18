@@ -1,3 +1,10 @@
+<style>
+body { max-width: 98% !important; width: 98% !important; margin: 0 !important; padding: 1em !important; }
+.markdown-body { max-width: 98% !important; width: 98% !important; }
+.container, .container-lg, .container-xl, main, article { max-width: 98% !important; width: 98% !important; }
+table { width: 100% !important; table-layout: fixed; }
+</style>
+
 # Heaptrack Analysis: Verus rust_verify
 
 **Date:** 2026-03-17
