@@ -84,9 +84,11 @@ symbol) or left to users via `MALLOC_CONF`.
 
 ## Cross-Project Validation
 
-Benchmarked 6 verita fixture projects to confirm the effect is not APAS-VERUS-specific.
-Each project ran 5 configs (warmup, glibc, glibc arena=2, jemalloc, jemalloc narenas:2).
-Verus `f04abf70` (toolchain 1.94.0, `--features singular`). All runs on a quiet machine.
+Benchmarked 6 verita fixture projects on Linux to confirm the effect is not
+APAS-VERUS-specific. Each project ran 5 configs (warmup, glibc, glibc arena=2,
+jemalloc, jemalloc narenas:2). Verus `f04abf70` (toolchain 1.94.0,
+`--features singular`). All runs on a quiet machine. macOS not yet benchmarked.
+Not applicable on Windows.
 
 | # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
 |---|---------|----------|----------|----------|-------|---------|---------|--------|

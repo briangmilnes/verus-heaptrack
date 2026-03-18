@@ -5,7 +5,8 @@
 
 ## Results
 
-glibc default vs jemalloc `narenas:2` on 6 Verus projects, quiet machine:
+glibc default vs jemalloc `narenas:2` on Linux, 6 Verus projects, quiet machine.
+macOS not yet benchmarked. Not applicable on Windows.
 
 | # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
 |---|---------|----------|----------|----------|-------|---------|---------|--------|
