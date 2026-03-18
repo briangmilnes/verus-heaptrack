@@ -85,7 +85,7 @@ Installed to unblock all fixtures:
 - **libpmem-dev**: `sudo apt install libpmem-dev` (for verified-storage pmem bindings)
 - **clang**: `sudo apt install clang` (for bindgen in verified-storage build.rs)
 
-Verus built with: `CARGO_BUILD_JOBS=4 vargo build --release --features singular`
+Verus built with: `vargo build --release --features singular`
 
 ## Observations
 
@@ -104,7 +104,5 @@ The proof-to-exec ratio varies dramatically:
 | 6 | verified-storage (combined) | 0.58 | Exec-heavy systems code |
 | 7 | APAS-VERUS | 0.56 | Exec-heavy (algorithms) |
 
-With corrected counting, APAS-VERUS is actually exec-heavy (53K exec vs 30K proof). The earlier
-numbers were inflated by double-counting requires/ensures as both spec and proof/exec. The high
-exec count reflects the project's focus on executable algorithm implementations with
-accompanying verification.
+APAS-VERUS is exec-heavy (53K exec vs 30K proof), reflecting the project's focus on
+executable algorithm implementations with accompanying verification.
