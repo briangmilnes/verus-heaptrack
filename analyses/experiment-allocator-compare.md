@@ -96,6 +96,7 @@ Verus `f04abf70` (toolchain 1.94.0, `--features singular`). All runs on a quiet 
 | 4 | vest | 496 | 648 | 565 | -13% | 5.7s | 5.2s | -9% |
 | 5 | memory-allocator | 731 | 1,629 | 1,416 | -13% | 38.7s | 35.2s | -9% |
 | 6 | APAS-VERUS | 4,265 | 5,822 | 5,143 | -12% | 59.2s | 53.2s | -10% |
+| | **Peak** | | | | **-14%** | | | **-14%** |
 | | **Average** | | | | **-12%** | | | **-9%** |
 
 The effect is consistent across all project sizes (537 MB to 5.8 GB). jemalloc narenas:2

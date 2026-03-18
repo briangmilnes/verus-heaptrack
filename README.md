@@ -2,8 +2,8 @@
 
 Memory profiling and allocator benchmarking for [Verus](https://github.com/verus-lang/verus) (`rust_verify`).
 
-**Switching from glibc malloc to jemalloc saves 12% peak RSS and 9% wall time
-on average across 6 open-source Verus projects, with zero code changes.**
+**Switching from glibc malloc to jemalloc saves 10-14% peak RSS (avg 12%) and
+4-14% wall time (avg 9%) across 6 open-source Verus projects, with zero code changes.**
 
 ## Results
 

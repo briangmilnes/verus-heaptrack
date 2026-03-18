@@ -15,6 +15,7 @@ glibc default vs jemalloc `narenas:2` on 6 Verus projects, quiet machine:
 | 4 | vest | 496 | 648 | 565 | -13% | 5.7s | 5.2s | -9% |
 | 5 | memory-allocator | 731 | 1,629 | 1,416 | -13% | 38.7s | 35.2s | -9% |
 | 6 | APAS-VERUS | 4,265 | 5,822 | 5,143 | -12% | 59.2s | 53.2s | -10% |
+| | **Peak** | | | | **-14%** | | | **-14%** |
 | | **Average** | | | | **-12%** | | | **-9%** |
 
 Per-project raw data: `results/benchmark-all-20260318-123432/`
