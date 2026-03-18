@@ -5,7 +5,7 @@ body { max-width: 98% !important; width: 98% !important; margin: 0 !important; p
 table { width: 100% !important; table-layout: fixed; }
 </style>
 
-# Benchmark Fixtures
+# Benchmark Systems and Results
 
 **Date:** 2026-03-18
 **Verus commit:** `f04abf70` (toolchain 1.94.0, `--features singular`)
