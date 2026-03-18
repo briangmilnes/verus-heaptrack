@@ -5,173 +5,165 @@ body { max-width: 98% !important; width: 98% !important; margin: 0 !important; p
 table { width: 100% !important; table-layout: fixed; }
 </style>
 
-# verus-heaptrack
+# Experiment: Allocator Comparison
 
-Memory profiling toolkit for the Verus verification tool.
+**Date:** 2026-03-18
+**Verus commit:** `76e69b81` (unpatched, via briangmilnes/verus-lang fork)
+**APAS-VERUS commit:** `e3a5c74d`
+**Machine load:** Quiet — no other significant processes running.
 
-## Problem
+## Motivation
 
-Verus (rust_verify) uses ~1.36 GB of heap memory when verifying large crates
-like APAS-VERUS (4076 verified functions). Virtually none of it is freed before
-process exit. This project contains the heaptrack analysis, proposed patches,
-and scripts for profiling and benchmarking.
+heaptrack reports 1.38 GB peak heap for rust_verify, but `top` shows the
+process at ~5.7 GB RSS. The 4.3 GB gap is caused by glibc malloc
+fragmentation: rust_verify makes 5M+ small Arc allocations (16-400 bytes)
+intermixed with 12M+ temporary Vec growth allocations, leaving glibc's
+per-thread arenas full of freed-but-resident pages. glibc does not return
+these pages to the OS.
 
-## Installation
+## Method
 
-### heaptrack
-
-```bash
-# Ubuntu/Debian
-sudo apt install heaptrack heaptrack-gui
-
-# Fedora
-sudo dnf install heaptrack
-
-# Arch
-sudo pacman -S heaptrack
-```
-
-### rustfilt (for demangling Rust symbols)
-
-```bash
-cargo install rustfilt
-```
-
-### GNU time
-
-```bash
-# Usually pre-installed. Verify:
-/usr/bin/time --version
-# If missing:
-sudo apt install time
-```
-
-### Verus (baseline)
-
-Assumes Verus is built at `~/projects/verus/source/target-verus/release/`.
-The toolchain (currently `1.93.1-x86_64-unknown-linux-gnu`) must be installed
-via rustup.
-
-## Quick start
-
-### 1. Profile with heaptrack
+Five runs of the same verification (1 warmup + 4 measured), differing only
+in allocator configuration. A warmup run primes filesystem caches so all
+tests start equally warm.
 
 ```bash
 cd ~/projects/APAS-VERUS
-~/projects/verus-heaptrack/scripts/verus-heaptrack src/lib.rs \
-    --multiple-errors 20 --expand-errors --num-threads 8
+~/projects/verus-heaptrack/scripts/allocator-compare \
+    --crate-type=lib src/lib.rs --multiple-errors 20 --expand-errors --num-threads 8
 ```
 
-### 2. Benchmark baseline (no heaptrack overhead)
+All runs: 4282 verified, 0 errors.
 
-```bash
-cd ~/projects/APAS-VERUS
-~/projects/verus-heaptrack/scripts/verus-benchmark src/lib.rs \
-    --multiple-errors 20 --expand-errors --num-threads 8
-```
+## Results
 
-### 3. Set up patched verus fork and compare
-
-```bash
-# Clone verus, apply the drop-vir-krate-early patch, and build:
-~/projects/verus-heaptrack/scripts/setup-verus-fork --apply-patch
-
-# Run baseline vs patched comparison (3 runs each, timed, peak RSS):
-cd ~/projects/APAS-VERUS
-~/projects/verus-heaptrack/scripts/verus-compare src/lib.rs \
-    --multiple-errors 20 --expand-errors --num-threads 8
-```
-
-Results are saved to `results/`.
-
-## Scripts
-
-| Script | Purpose |
-|--------|---------|
-| `scripts/verus-heaptrack` | Run heaptrack on rust_verify (bypasses verus launcher) |
-| `scripts/verus-benchmark` | Measure wall time + peak RSS with `/usr/bin/time -v` (no heaptrack) |
-| `scripts/verus-compare` | Run baseline and patched benchmarks back-to-back |
-| `scripts/setup-verus-fork` | Clone verus-lang/verus, optionally apply patch, build |
-
-### Environment variables
-
-| Variable | Default | Used by |
-|----------|---------|---------|
-| `VERUS_ROOT` | `~/projects/verus/source/target-verus/release` | All scripts |
-| `VERUS_TOOLCHAIN` | `1.93.1-x86_64-unknown-linux-gnu` | All scripts |
-| `VERUS_ORIGINAL` | `~/projects/verus/source/target-verus/release` | `verus-compare` |
-| `VERUS_PATCHED` | `~/projects/verus-patched/source/target-verus/release` | `verus-compare` |
-| `BENCHMARK_LABEL` | `run` | `verus-benchmark` |
-| `BENCHMARK_RUNS` | `3` | `verus-benchmark`, `verus-compare` |
-
-## Setting up a verus fork
-
-### Fresh clone + patch + build
-
-```bash
-# Clone, apply patch, build:
-~/projects/verus-heaptrack/scripts/setup-verus-fork --apply-patch
-```
-
-This creates `~/projects/verus-patched/` with branch `heaptrack-memory-fix`.
-
-### Manual setup
-
-```bash
-git clone https://github.com/verus-lang/verus.git ~/projects/verus-patched
-cd ~/projects/verus-patched
-git checkout 76e69b81   # Pinned commit matching analysis
-git checkout -b heaptrack-memory-fix
-
-# Apply the patch:
-git apply ~/projects/verus-heaptrack/patches/drop-vir-krate-early.patch
-git add -A && git commit -m "Drop VIR Krate after SST conversion"
-
-# Build (vargo must be built first):
-cd source
-cd tools/vargo && cargo build --release && cd ../..
-./tools/vargo/target/release/vargo build --release
-```
-
-### Verify correctness
-
-After building the patched version, run the verus test suite:
-
-```bash
-cd ~/projects/verus-patched/source
-./tools/vargo/target/release/vargo test --release
-```
-
-## Why heaptrack on verus doesn't work out of the box
-
-The `verus` binary (4.1 MB) is a thin launcher that exec's:
-
-    rustup run <toolchain> -- rust_verify <args>
-
-On Unix, `exec()` replaces the process, which resets LD_PRELOAD. heaptrack's
-LD_PRELOAD-based interception dies at the exec boundary, producing ~70 KB of
-trace (just the launcher's allocations) instead of the real data.
-
-The fix: invoke `rust_verify` directly with `LD_LIBRARY_PATH` pointing to the
-toolchain's lib directory. That's what `scripts/verus-heaptrack` does.
-
-## Proposed patches
-
-See `plans/` for two proposed changes:
-
-1. **plan-drop-vir-krate-early.md** — Drop the VIR Krate after SST conversion.
-   **Tested 2026-03-17: no measurable effect** with `--num-threads 8`.
-   Arc refcounting keeps the data alive until all worker threads finish.
-   See `analysis/experiment-drop-vir-krate-early.md` for full results.
-
-2. **plan-intern-paths.md** — Intern VIR path symbols to deduplicate 4.97M
-   allocations down to ~20K unique paths. Saves ~167 MB. Not yet tested.
-   Unaffected by threading — the more promising approach.
+| # | Allocator | Peak RSS (KB) | Peak RSS (GB) | RSS delta | Wall time | Time delta |
+|---|-----------|---------------|---------------|-----------|-----------|------------|
+| W | warmup (glibc) | 6,023,044 | 5.74 | — | 1:00.67 | — |
+| 1 | glibc malloc (default) | 6,020,900 | 5.74 | — | 1:00.02 | — |
+| 2 | glibc malloc (MALLOC_ARENA_MAX=2) | 5,968,284 | 5.69 | -52 MB (-0.9%) | 1:08.21 | +8.2s (+14%) |
+| 3 | jemalloc (default arenas) | 5,397,196 | 5.15 | -624 MB (-10.3%) | 0:52.47 | -7.6s (-13%) |
+| 4 | jemalloc (narenas:2) | 5,306,864 | 5.06 | -714 MB (-11.9%) | 0:52.90 | -7.1s (-12%) |
 
 ## Analysis
 
-- `analysis/heaptrack-findings.md` — Full heaptrack analysis: binary architecture,
-  allocation layers, peak memory consumers, VIR Krate lifetime trace
-- `analysis/experiment-drop-vir-krate-early.md` — Experiment results showing why
-  the Krate drop patch is ineffective with multi-threaded verification, and what
-  approaches would actually reduce memory
+### jemalloc saves 624-714 MB and is 13% faster
+
+jemalloc with default arenas reduces peak RSS by 624 MB (10.3%) and wall
+time by 7.6 seconds (13%). With `narenas:2`, the savings increase to
+714 MB (11.9%) with no additional time penalty.
+
+jemalloc wins on both axes because its size-class segregation handles the
+millions of small Arc allocations more efficiently than glibc:
+
+- **Less fragmentation**: freed objects return to size-class slabs, not
+  general-purpose free lists. Pages can be recycled sooner.
+- **Better cache locality**: the allocator's own data structures are
+  smaller and more cache-friendly, reducing overhead on the hot allocation
+  path.
+
+### jemalloc narenas:2 saves an extra 90 MB over default jemalloc
+
+Limiting jemalloc to 2 arenas (vs the default, typically 4x CPU count)
+saves an additional 90 MB without hurting wall time. With only 2 arenas,
+there is less per-arena overhead and less memory held in per-arena caches.
+jemalloc's lock-free fast path means the reduced arena count does not
+cause contention — unlike glibc.
+
+### glibc MALLOC_ARENA_MAX=2 is counterproductive
+
+Limiting glibc to 2 arenas saves only 52 MB of RSS but adds 8.2 seconds
+(14%) to wall time. glibc's arena locking does not have a fast path — fewer
+arenas means more lock contention. The minimal memory savings are not worth
+the performance cost.
+
+### The fragmentation problem quantified
+
+glibc malloc: 1.38 GB live heap in 5.74 GB resident pages = **24% utilization**.
+jemalloc narenas:2: 1.38 GB live heap in 5.06 GB resident pages = **27% utilization**.
+
+Even jemalloc cannot fully close the gap. The remaining 3.7 GB of RSS
+overhead comes from:
+
+- Allocator metadata and page-level fragmentation (unavoidable with
+  millions of small objects)
+- mmap'd shared libraries (librustc_driver alone is 146 MB on disk)
+- Thread stacks (8 workers + main)
+- Kernel page table overhead
+
+Reducing the number of small allocations (Plan 2: path interning eliminates
+5M allocations) would improve utilization under either allocator.
+
+## Comparison with code-level optimizations
+
+| # | Approach | RSS saved | Wall time | Code changes |
+|---|----------|-----------|-----------|-------------|
+| 1 | jemalloc narenas:2 | 714 MB | -7.1s (-12%) | 0 lines |
+| 2 | Plan 2: intern paths | ~176 MB heap + fragmentation | neutral | ~20 lines |
+| 3 | Plan 3: pre-compute SST | ~150 MB heap + fragmentation | neutral | ~110 lines |
+| 4 | Plans 2+3 | ~305 MB heap + fragmentation | neutral | ~130 lines |
+| 5 | jemalloc + Plans 2+3 | ~1 GB (estimated) | -12% | ~130 lines |
+
+Path interning (Plan 2) would have an outsized effect on RSS because
+eliminating 5M small allocations reduces fragmentation, not just live heap.
+The RSS savings could be 2-3x the raw 176 MB heap savings. Combined with
+jemalloc narenas:2, the total reduction could approach 1 GB.
+
+## Recommendations
+
+### Immediate (zero code changes)
+
+Add `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2` to the verus
+invocation. Optionally add `MALLOC_CONF=narenas:2`. This saves 714 MB of
+RSS and 7 seconds of wall time immediately. Could be documented or added
+as a default in the verus launcher script.
+
+### For a Verus PR
+
+Link jemalloc as the global allocator. Two lines in `rust_verify/src/main.rs`:
+
+```rust
+#[global_allocator]
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+```
+
+Plus a `Cargo.toml` dependency on `tikv-jemallocator`. This benefits all
+users without requiring LD_PRELOAD. The crate is widely used in the Rust
+ecosystem (TiKV, Servo, ripgrep, Deno, etc.) and is well-maintained.
+
+The `narenas:2` tuning could be set via `_rjem_malloc_conf` (a link-time
+symbol) or left to users via `MALLOC_CONF`.
+
+## Cross-Project Validation
+
+Benchmarked 6 verita fixture projects to confirm the effect is not APAS-VERUS-specific.
+Each project ran 5 configs (warmup, glibc, glibc arena=2, jemalloc, jemalloc narenas:2).
+Verus `f04abf70` (toolchain 1.94.0, `--features singular`). All runs on a quiet machine.
+
+| # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
+|---|---------|----------|----------|----------|-------|---------|---------|--------|
+| 1 | human-eval | 292 | 614 | 537 | -13% | 5.4s | 5.1s | -4% |
+| 2 | ironkv | 319 | 783 | 706 | -10% | 5.4s | 5.1s | -5% |
+| 3 | node-replication | 254 | 957 | 854 | -11% | 6.5s | 5.5s | -14% |
+| 4 | vest | 496 | 648 | 565 | -13% | 5.7s | 5.2s | -9% |
+| 5 | memory-allocator | 731 | 1,629 | 1,416 | -13% | 38.7s | 35.2s | -9% |
+| 6 | APAS-VERUS | 4,265 | 5,822 | 5,143 | -12% | 59.2s | 53.2s | -10% |
+| | **Average** | | | | **-12%** | | | **-9%** |
+
+The effect is consistent across all project sizes (537 MB to 5.8 GB). jemalloc narenas:2
+wins on both RSS and wall time in every case.
+
+Per-project results: `results/benchmark-all-20260318-123432/`
+
+## Raw Data
+
+- Clean run: `results/allocator-compare-20260318-095817.txt`
+- Earlier noisy runs (for RSS reproducibility):
+  `results/allocator-compare-20260318-085859.txt`,
+  `results/allocator-compare-20260318-094610.txt`
+
+## TODO
+
+- [ ] Measure jemalloc + path interning together
+- [ ] Test `mimalloc` as a third allocator option
+- [ ] Verify jemalloc results on a different machine
