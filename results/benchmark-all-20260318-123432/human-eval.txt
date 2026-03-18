@@ -1,0 +1,36 @@
+PROJECT: human-eval
+Started: Wed Mar 18 12:34:32 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/human-eval
+args: tasks/lib.rs --crate-type=lib
+
+  warmup
+verification results:: 292 verified, 0 errors
+	Percent of CPU this job got: 398%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.35
+	Maximum resident set size (kbytes): 626308
+
+  glibc
+verification results:: 292 verified, 0 errors
+	Percent of CPU this job got: 401%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.36
+	Maximum resident set size (kbytes): 628344
+
+  glibc arena=2
+verification results:: 292 verified, 0 errors
+	Percent of CPU this job got: 551%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.26
+	Maximum resident set size (kbytes): 578012
+
+  jemalloc
+verification results:: 292 verified, 0 errors
+	Percent of CPU this job got: 405%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.20
+	Maximum resident set size (kbytes): 588160
+
+  jemalloc n=2
+verification results:: 292 verified, 0 errors
+	Percent of CPU this job got: 414%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.14
+	Maximum resident set size (kbytes): 549628
+
+Finished: Wed Mar 18 12:35:01 PM PDT 2026

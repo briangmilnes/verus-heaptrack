@@ -1,0 +1,36 @@
+PROJECT: node-replication
+Started: Wed Mar 18 12:35:29 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/node-replication
+args: verified-node-replication/src/lib.rs --crate-type=dylib
+
+  warmup
+verification results:: 254 verified, 0 errors
+	Percent of CPU this job got: 242%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.14
+	Maximum resident set size (kbytes): 979256
+
+  glibc
+verification results:: 254 verified, 0 errors
+	Percent of CPU this job got: 238%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.45
+	Maximum resident set size (kbytes): 980496
+
+  glibc arena=2
+verification results:: 254 verified, 0 errors
+	Percent of CPU this job got: 384%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.41
+	Maximum resident set size (kbytes): 872892
+
+  jemalloc
+verification results:: 254 verified, 0 errors
+	Percent of CPU this job got: 252%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.25
+	Maximum resident set size (kbytes): 889192
+
+  jemalloc n=2
+verification results:: 254 verified, 0 errors
+	Percent of CPU this job got: 250%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.52
+	Maximum resident set size (kbytes): 874128
+
+Finished: Wed Mar 18 12:36:01 PM PDT 2026

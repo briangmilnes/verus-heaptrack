@@ -1,0 +1,36 @@
+PROJECT: memory-allocator
+Started: Wed Mar 18 12:36:31 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/memory-allocator
+args: verus-mimalloc/lib.rs --extern libc=build/liblibc.rlib --triggers-mode silent --rlimit 240
+
+  warmup
+verification results:: 731 verified, 0 errors
+	Percent of CPU this job got: 1097%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:39.22
+	Maximum resident set size (kbytes): 1675884
+
+  glibc
+verification results:: 731 verified, 0 errors
+	Percent of CPU this job got: 1054%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:38.70
+	Maximum resident set size (kbytes): 1668112
+
+  glibc arena=2
+verification results:: 731 verified, 0 errors
+	Percent of CPU this job got: 895%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:55.14
+	Maximum resident set size (kbytes): 1529348
+
+  jemalloc
+verification results:: 731 verified, 0 errors
+	Percent of CPU this job got: 1102%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:34.44
+	Maximum resident set size (kbytes): 1569596
+
+  jemalloc n=2
+verification results:: 731 verified, 0 errors
+	Percent of CPU this job got: 1112%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:35.15
+	Maximum resident set size (kbytes): 1450240
+
+Finished: Wed Mar 18 12:39:53 PM PDT 2026

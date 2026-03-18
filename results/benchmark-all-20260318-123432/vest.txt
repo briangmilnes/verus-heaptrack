@@ -1,0 +1,36 @@
+PROJECT: vest
+Started: Wed Mar 18 12:36:01 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/vest
+args: vest/src/lib.rs --crate-type=lib --no-report-long-running
+
+  warmup
+verification results:: 496 verified, 0 errors
+	Percent of CPU this job got: 249%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.62
+	Maximum resident set size (kbytes): 662992
+
+  glibc
+verification results:: 496 verified, 0 errors
+	Percent of CPU this job got: 251%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.68
+	Maximum resident set size (kbytes): 663316
+
+  glibc arena=2
+verification results:: 496 verified, 0 errors
+	Percent of CPU this job got: 342%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.75
+	Maximum resident set size (kbytes): 606608
+
+  jemalloc
+verification results:: 496 verified, 0 errors
+	Percent of CPU this job got: 251%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.42
+	Maximum resident set size (kbytes): 582724
+
+  jemalloc n=2
+verification results:: 496 verified, 0 errors
+	Percent of CPU this job got: 260%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.17
+	Maximum resident set size (kbytes): 578716
+
+Finished: Wed Mar 18 12:36:31 PM PDT 2026

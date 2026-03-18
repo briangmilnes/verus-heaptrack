@@ -1,0 +1,36 @@
+PROJECT: apas-verus
+Started: Wed Mar 18 12:39:53 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/apas-verus
+args: --crate-type=lib src/lib.rs --num-threads 8
+
+  warmup
+verification results:: 4265 verified, 0 errors
+	Percent of CPU this job got: 381%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:59.77
+	Maximum resident set size (kbytes): 5959620
+
+  glibc
+verification results:: 4265 verified, 0 errors
+	Percent of CPU this job got: 380%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:59.16
+	Maximum resident set size (kbytes): 5962448
+
+  glibc arena=2
+verification results:: 4265 verified, 0 errors
+	Percent of CPU this job got: 397%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:09.79
+	Maximum resident set size (kbytes): 5926184
+
+  jemalloc
+verification results:: 4265 verified, 0 errors
+	Percent of CPU this job got: 393%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.64
+	Maximum resident set size (kbytes): 5348356
+
+  jemalloc n=2
+verification results:: 4265 verified, 0 errors
+	Percent of CPU this job got: 388%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:53.18
+	Maximum resident set size (kbytes): 5265932
+
+Finished: Wed Mar 18 12:44:47 PM PDT 2026

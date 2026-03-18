@@ -1,0 +1,36 @@
+PROJECT: ironkv
+Started: Wed Mar 18 12:35:01 PM PDT 2026
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/ironkv
+args: ironsht/src/lib.rs --crate-type=lib --no-report-long-running
+
+  warmup
+verification results:: 319 verified, 0 errors
+	Percent of CPU this job got: 364%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.39
+	Maximum resident set size (kbytes): 802468
+
+  glibc
+verification results:: 319 verified, 0 errors
+	Percent of CPU this job got: 367%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.35
+	Maximum resident set size (kbytes): 801244
+
+  glibc arena=2
+verification results:: 319 verified, 0 errors
+	Percent of CPU this job got: 496%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.46
+	Maximum resident set size (kbytes): 729976
+
+  jemalloc
+verification results:: 319 verified, 0 errors
+	Percent of CPU this job got: 371%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.21
+	Maximum resident set size (kbytes): 730920
+
+  jemalloc n=2
+verification results:: 319 verified, 0 errors
+	Percent of CPU this job got: 379%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.10
+	Maximum resident set size (kbytes): 723300
+
+Finished: Wed Mar 18 12:35:29 PM PDT 2026

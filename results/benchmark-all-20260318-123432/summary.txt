@@ -1,0 +1,100 @@
+========================================
+SUMMARY
+========================================
+
+--- apas-verus ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:59.77
+	Maximum resident set size (kbytes): 5959620
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:59.16
+	Maximum resident set size (kbytes): 5962448
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:09.79
+	Maximum resident set size (kbytes): 5926184
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:51.64
+	Maximum resident set size (kbytes): 5348356
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:53.18
+	Maximum resident set size (kbytes): 5265932
+
+--- human-eval ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.35
+	Maximum resident set size (kbytes): 626308
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.36
+	Maximum resident set size (kbytes): 628344
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.26
+	Maximum resident set size (kbytes): 578012
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.20
+	Maximum resident set size (kbytes): 588160
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.14
+	Maximum resident set size (kbytes): 549628
+
+--- ironkv ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.39
+	Maximum resident set size (kbytes): 802468
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.35
+	Maximum resident set size (kbytes): 801244
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.46
+	Maximum resident set size (kbytes): 729976
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.21
+	Maximum resident set size (kbytes): 730920
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.10
+	Maximum resident set size (kbytes): 723300
+
+--- memory-allocator ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:39.22
+	Maximum resident set size (kbytes): 1675884
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:38.70
+	Maximum resident set size (kbytes): 1668112
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:55.14
+	Maximum resident set size (kbytes): 1529348
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:34.44
+	Maximum resident set size (kbytes): 1569596
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:35.15
+	Maximum resident set size (kbytes): 1450240
+
+--- node-replication ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.14
+	Maximum resident set size (kbytes): 979256
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:06.45
+	Maximum resident set size (kbytes): 980496
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:08.41
+	Maximum resident set size (kbytes): 872892
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.25
+	Maximum resident set size (kbytes): 889192
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.52
+	Maximum resident set size (kbytes): 874128
+
+--- vest ---
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.62
+	Maximum resident set size (kbytes): 662992
+  glibc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.68
+	Maximum resident set size (kbytes): 663316
+  glibc arena=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:07.75
+	Maximum resident set size (kbytes): 606608
+  jemalloc
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.42
+	Maximum resident set size (kbytes): 582724
+  jemalloc n=2
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:05.17
+	Maximum resident set size (kbytes): 578716
+
