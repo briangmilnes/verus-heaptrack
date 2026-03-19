@@ -1,0 +1,235 @@
+#!/usr/bin/env bash
+#
+# Benchmark 3 verus builds: baseline vs jemalloc vs jemalloc+defid_cache
+#
+# Measures peak RSS and wall time using /usr/bin/time -v.
+# Each variant uses its own compiled binary — no LD_PRELOAD.
+#
+# Usage:
+#   benchmark-defid-compare [runs] [project...]
+#
+# Arguments:
+#   runs       Number of timed runs per variant (default: 1)
+#   project    One or more project names to benchmark (default: all)
+#
+# Examples:
+#   benchmark-defid-compare 3                    # all projects, 3 runs
+#   benchmark-defid-compare 1 apas-verus         # just apas-verus, 1 run
+#   benchmark-defid-compare 3 ironkv vest        # ironkv and vest, 3 runs
+#
+# Worktree layout (all release builds):
+#   verus-lang-baseline  — main branch, glibc allocator
+#   verus-lang-jemalloc  — jemalloc compiled in
+#   verus-lang           — jemalloc + defid_cache
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+FIXTURES="$PROJECT_ROOT/tests/fixtures"
+RESULTS_DIR="$PROJECT_ROOT/results"
+
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.94.0-x86_64-unknown-linux-gnu}"
+LD_LIB="$HOME/.rustup/toolchains/$TOOLCHAIN/lib"
+
+# Parse arguments: first arg is runs (if numeric), rest are project names
+RUNS=1
+PROJECTS=()
+for arg in "$@"; do
+    if [[ "$arg" =~ ^[0-9]+$ ]] && [ ${#PROJECTS[@]} -eq 0 ] && [ "$RUNS" -eq 1 ]; then
+        RUNS="$arg"
+    else
+        PROJECTS+=("$arg")
+    fi
+done
+
+declare -A VARIANT_ROOT
+VARIANT_ROOT[baseline]="$HOME/projects/verus-lang-baseline/source/target-verus/release"
+VARIANT_ROOT[jemalloc]="$HOME/projects/verus-lang-jemalloc/source/target-verus/release"
+VARIANT_ROOT[jemalloc+defid]="$HOME/projects/verus-lang/source/target-verus/release"
+
+VARIANTS=(baseline jemalloc jemalloc+defid)
+
+# Validate all binaries exist
+for v in "${VARIANTS[@]}"; do
+    rv="${VARIANT_ROOT[$v]}/rust_verify"
+    if [ ! -x "$rv" ]; then
+        echo "ERROR: rust_verify not found at $rv" >&2
+        exit 1
+    fi
+done
+
+# Project definitions: name -> "cwd verus-args..."
+declare -A PROJECT_DEF
+PROJECT_DEF[human-eval]="$FIXTURES/human-eval tasks/lib.rs --crate-type=lib"
+PROJECT_DEF[ironkv]="$FIXTURES/ironkv ironsht/src/lib.rs --crate-type=lib --no-report-long-running"
+PROJECT_DEF[node-replication]="$FIXTURES/node-replication verified-node-replication/src/lib.rs --crate-type=dylib"
+PROJECT_DEF[vest]="$FIXTURES/vest vest/src/lib.rs --crate-type=lib --no-report-long-running"
+PROJECT_DEF[memory-allocator]="$FIXTURES/memory-allocator verus-mimalloc/lib.rs --extern libc=build/liblibc.rlib --triggers-mode silent --rlimit 240"
+PROJECT_DEF[apas-verus]="$FIXTURES/apas-verus --crate-type=lib src/lib.rs --num-threads 8"
+
+ALL_PROJECTS=(human-eval ironkv node-replication vest memory-allocator apas-verus)
+
+# Default to all projects if none specified
+if [ ${#PROJECTS[@]} -eq 0 ]; then
+    PROJECTS=("${ALL_PROJECTS[@]}")
+fi
+
+# Validate requested projects exist
+for p in "${PROJECTS[@]}"; do
+    if [ -z "${PROJECT_DEF[$p]+x}" ]; then
+        echo "ERROR: unknown project '$p'" >&2
+        echo "Available: ${ALL_PROJECTS[*]}" >&2
+        exit 1
+    fi
+done
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTDIR="$RESULTS_DIR/defid-compare-$TIMESTAMP"
+mkdir -p "$OUTDIR"
+
+echo "=== Benchmark: baseline vs jemalloc vs jemalloc+defid_cache ==="
+echo "Date:      $(date)"
+echo "Runs:      $RUNS per variant"
+echo "Projects:  ${PROJECTS[*]}"
+echo "Toolchain: $TOOLCHAIN"
+echo "Output:    $OUTDIR"
+echo ""
+
+# Run one invocation: variant, label, outfile, verus-args...
+run_one() {
+    local variant="$1"
+    local label="$2"
+    local outfile="$3"
+    shift 3
+    local verus_args=("$@")
+    local root="${VARIANT_ROOT[$variant]}"
+    local rv="$root/rust_verify"
+    local z3="$root/z3"
+    local singular
+    singular="$(which Singular 2>/dev/null || true)"
+
+    echo "  $label: $variant"
+
+    local timefile stdoutfile
+    timefile=$(mktemp)
+    stdoutfile=$(mktemp)
+
+    set +e
+    /usr/bin/time -v env \
+        LD_LIBRARY_PATH="$LD_LIB" \
+        VSTD_KIND=Imported \
+        VERUS_Z3_PATH="$z3" \
+        ${singular:+VERUS_SINGULAR_PATH="$singular"} \
+        RUSTC_BOOTSTRAP=1 \
+        "$rv" \
+        "${verus_args[@]}" \
+        > "$stdoutfile" 2> "$timefile"
+    local exit_code=$?
+    set -e
+
+    local wall_time peak_rss verified_line
+    wall_time=$(grep "Elapsed (wall clock)" "$timefile" | sed 's/.*: //')
+    peak_rss=$(grep "Maximum resident" "$timefile" | sed 's/.*: //')
+    verified_line=$(grep "verification results" "$stdoutfile" || echo "n/a")
+
+    echo "    wall:  $wall_time"
+    echo "    RSS:   ${peak_rss} KB ($(( peak_rss / 1024 )) MB)"
+    echo "    exit:  $exit_code"
+    echo "    $verified_line"
+
+    {
+        echo "$label  $variant"
+        echo "  wall_time:    $wall_time"
+        echo "  peak_rss_kb:  $peak_rss"
+        echo "  peak_rss_mb:  $(( peak_rss / 1024 ))"
+        echo "  exit_code:    $exit_code"
+        echo "  $verified_line"
+        echo ""
+    } >> "$outfile"
+
+    rm -f "$timefile" "$stdoutfile"
+}
+
+# Benchmark one project
+benchmark_project() {
+    local name="$1"
+    local def="${PROJECT_DEF[$name]}"
+
+    # Split definition: first token is cwd, rest are verus args
+    local cwd
+    cwd=$(echo "$def" | awk '{print $1}')
+    local verus_args
+    read -ra verus_args <<< "$(echo "$def" | cut -d' ' -f2-)"
+
+    local outfile="$OUTDIR/$name.txt"
+
+    echo "========================================"
+    echo "PROJECT: $name"
+    echo "========================================"
+
+    {
+        echo "PROJECT: $name"
+        echo "Started: $(date -Iseconds)"
+        echo "cwd: $cwd"
+        echo "args: ${verus_args[*]}"
+        for v in "${VARIANTS[@]}"; do
+            commit=$(cd "${VARIANT_ROOT[$v]}/../.." 2>/dev/null && git rev-parse --short HEAD 2>/dev/null || echo unknown)
+            echo "  $v: commit $commit"
+        done
+        echo ""
+    } > "$outfile"
+
+    cd "$cwd"
+
+    # Warmup
+    echo "--- Warmup ---"
+    for v in "${VARIANTS[@]}"; do
+        run_one "$v" "warmup" "$outfile" "${verus_args[@]}"
+    done
+    echo ""
+
+    # Timed runs
+    for i in $(seq 1 "$RUNS"); do
+        echo "--- Run $i/$RUNS ---"
+        for v in "${VARIANTS[@]}"; do
+            run_one "$v" "run$i" "$outfile" "${verus_args[@]}"
+        done
+        echo ""
+    done
+
+    # Per-project summary
+    echo "--- $name summary ---" | tee -a "$outfile"
+    printf "%-20s %12s %10s\n" "Variant" "Peak RSS MB" "Wall Time" | tee -a "$outfile"
+    printf "%-20s %12s %10s\n" "-------" "-----------" "---------" | tee -a "$outfile"
+
+    for v in "${VARIANTS[@]}"; do
+        rss=$(grep -A3 "^run.*  $v\$" "$outfile" | grep peak_rss_mb | awk '{sum+=$2; n++} END {if(n>0) printf "%d", sum/n; else print "n/a"}')
+        wall=$(grep -A2 "^run.*  $v\$" "$outfile" | grep wall_time | awk '{print $2}' | tail -1)
+        printf "%-20s %12s %10s\n" "$v" "$rss" "$wall" | tee -a "$outfile"
+    done
+    echo "" | tee -a "$outfile"
+    echo "Finished: $(date)" >> "$outfile"
+}
+
+# Run all requested projects
+for p in "${PROJECTS[@]}"; do
+    benchmark_project "$p"
+done
+
+# Overall summary
+echo "========================================" | tee "$OUTDIR/summary.txt"
+echo "OVERALL SUMMARY" | tee -a "$OUTDIR/summary.txt"
+echo "========================================" | tee -a "$OUTDIR/summary.txt"
+echo "" | tee -a "$OUTDIR/summary.txt"
+
+for p in "${PROJECTS[@]}"; do
+    f="$OUTDIR/$p.txt"
+    [ -f "$f" ] || continue
+    echo "--- $p ---" | tee -a "$OUTDIR/summary.txt"
+    grep -A20 "summary ---" "$f" | grep -E "Variant|-------|baseline|jemalloc" | tee -a "$OUTDIR/summary.txt"
+    echo "" | tee -a "$OUTDIR/summary.txt"
+done
+
+echo ""
+echo "Results saved to: $OUTDIR"
