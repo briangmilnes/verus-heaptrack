@@ -6,6 +6,7 @@
 ## Results
 
 glibc default vs jemalloc `narenas:2` on Linux, 6 Verus projects, quiet machine.
+verified-storage (6a/6b/6c) could not be benchmarked (see below).
 macOS not yet benchmarked. Not applicable on Windows.
 
 | # | Project | Verified | glibc MB | jemal MB | RSS Δ | glibc s | jemal s | Time Δ |
