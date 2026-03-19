@@ -1,0 +1,100 @@
+PROJECT: ironkv
+Started: 2026-03-19T14:54:32-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/ironkv
+args: ironsht/src/lib.rs --crate-type=lib --no-report-long-running
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:05.07
+  peak_rss_kb:  802836
+  peak_rss_mb:  784
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+warmup  jemalloc
+  wall_time:    0:04.60
+  peak_rss_kb:  737080
+  peak_rss_mb:  719
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+warmup  jemalloc+defid
+  wall_time:    0:04.46
+  peak_rss_kb:  720068
+  peak_rss_mb:  703
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run1  baseline
+  wall_time:    0:05.09
+  peak_rss_kb:  802444
+  peak_rss_mb:  783
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:04.57
+  peak_rss_kb:  737068
+  peak_rss_mb:  719
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run1  jemalloc+defid
+  wall_time:    0:04.59
+  peak_rss_kb:  721844
+  peak_rss_mb:  704
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run2  baseline
+  wall_time:    0:05.05
+  peak_rss_kb:  802084
+  peak_rss_mb:  783
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:04.55
+  peak_rss_kb:  738020
+  peak_rss_mb:  720
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run2  jemalloc+defid
+  wall_time:    0:04.49
+  peak_rss_kb:  721004
+  peak_rss_mb:  704
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run3  baseline
+  wall_time:    0:05.04
+  peak_rss_kb:  802228
+  peak_rss_mb:  783
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:04.61
+  peak_rss_kb:  738252
+  peak_rss_mb:  720
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+run3  jemalloc+defid
+  wall_time:    0:04.53
+  peak_rss_kb:  721960
+  peak_rss_mb:  705
+  exit_code:    0
+  verification results:: 319 verified, 0 errors
+
+--- ironkv summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      783    0:05.04
+jemalloc                      719    0:04.61
+jemalloc+defid                704    0:04.53
+
+Finished: Thu Mar 19 02:55:29 PM PDT 2026

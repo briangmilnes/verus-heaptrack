@@ -1,0 +1,100 @@
+PROJECT: apas-verus
+Started: 2026-03-19T14:58:11-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/apas-verus
+args: --crate-type=lib src/lib.rs --num-threads 8
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:51.87
+  peak_rss_kb:  5967116
+  peak_rss_mb:  5827
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+warmup  jemalloc
+  wall_time:    0:45.12
+  peak_rss_kb:  5325652
+  peak_rss_mb:  5200
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+warmup  jemalloc+defid
+  wall_time:    0:44.63
+  peak_rss_kb:  5050512
+  peak_rss_mb:  4932
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run1  baseline
+  wall_time:    0:52.30
+  peak_rss_kb:  5960444
+  peak_rss_mb:  5820
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:45.15
+  peak_rss_kb:  5332664
+  peak_rss_mb:  5207
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run1  jemalloc+defid
+  wall_time:    0:44.62
+  peak_rss_kb:  5059588
+  peak_rss_mb:  4941
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run2  baseline
+  wall_time:    0:52.23
+  peak_rss_kb:  5971704
+  peak_rss_mb:  5831
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:45.61
+  peak_rss_kb:  5311176
+  peak_rss_mb:  5186
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run2  jemalloc+defid
+  wall_time:    0:44.87
+  peak_rss_kb:  5047080
+  peak_rss_mb:  4928
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run3  baseline
+  wall_time:    0:52.00
+  peak_rss_kb:  5970240
+  peak_rss_mb:  5830
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:45.48
+  peak_rss_kb:  5320976
+  peak_rss_mb:  5196
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run3  jemalloc+defid
+  wall_time:    0:45.18
+  peak_rss_kb:  5052556
+  peak_rss_mb:  4934
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+--- apas-verus summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                     5827    0:52.00
+jemalloc                     5196    0:45.48
+jemalloc+defid               4934    0:45.18
+
+Finished: Thu Mar 19 03:07:41 PM PDT 2026

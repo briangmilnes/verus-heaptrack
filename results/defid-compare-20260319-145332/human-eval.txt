@@ -1,0 +1,100 @@
+PROJECT: human-eval
+Started: 2026-03-19T14:53:32-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/human-eval
+args: tasks/lib.rs --crate-type=lib
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:05.32
+  peak_rss_kb:  630376
+  peak_rss_mb:  615
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+warmup  jemalloc
+  wall_time:    0:04.79
+  peak_rss_kb:  588084
+  peak_rss_mb:  574
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+warmup  jemalloc+defid
+  wall_time:    0:04.81
+  peak_rss_kb:  584232
+  peak_rss_mb:  570
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run1  baseline
+  wall_time:    0:05.24
+  peak_rss_kb:  631760
+  peak_rss_mb:  616
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:04.85
+  peak_rss_kb:  588188
+  peak_rss_mb:  574
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run1  jemalloc+defid
+  wall_time:    0:04.72
+  peak_rss_kb:  582752
+  peak_rss_mb:  569
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run2  baseline
+  wall_time:    0:05.24
+  peak_rss_kb:  629852
+  peak_rss_mb:  615
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:04.87
+  peak_rss_kb:  589724
+  peak_rss_mb:  575
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run2  jemalloc+defid
+  wall_time:    0:04.77
+  peak_rss_kb:  581148
+  peak_rss_mb:  567
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run3  baseline
+  wall_time:    0:05.15
+  peak_rss_kb:  632428
+  peak_rss_mb:  617
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:04.85
+  peak_rss_kb:  592924
+  peak_rss_mb:  579
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run3  jemalloc+defid
+  wall_time:    0:04.79
+  peak_rss_kb:  579452
+  peak_rss_mb:  565
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+--- human-eval summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      616    0:05.15
+jemalloc                      576    0:04.85
+jemalloc+defid                567    0:04.79
+
+Finished: Thu Mar 19 02:54:32 PM PDT 2026

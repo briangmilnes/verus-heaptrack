@@ -1,0 +1,100 @@
+PROJECT: node-replication
+Started: 2026-03-19T14:55:29-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/node-replication
+args: verified-node-replication/src/lib.rs --crate-type=dylib
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:05.46
+  peak_rss_kb:  979504
+  peak_rss_mb:  956
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+warmup  jemalloc
+  wall_time:    0:04.77
+  peak_rss_kb:  878988
+  peak_rss_mb:  858
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+warmup  jemalloc+defid
+  wall_time:    0:04.73
+  peak_rss_kb:  859076
+  peak_rss_mb:  838
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run1  baseline
+  wall_time:    0:05.45
+  peak_rss_kb:  976780
+  peak_rss_mb:  953
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:04.58
+  peak_rss_kb:  884840
+  peak_rss_mb:  864
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run1  jemalloc+defid
+  wall_time:    0:04.63
+  peak_rss_kb:  863388
+  peak_rss_mb:  843
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run2  baseline
+  wall_time:    0:05.49
+  peak_rss_kb:  980420
+  peak_rss_mb:  957
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:04.61
+  peak_rss_kb:  886428
+  peak_rss_mb:  865
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run2  jemalloc+defid
+  wall_time:    0:04.64
+  peak_rss_kb:  855672
+  peak_rss_mb:  835
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run3  baseline
+  wall_time:    0:05.47
+  peak_rss_kb:  977588
+  peak_rss_mb:  954
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:04.63
+  peak_rss_kb:  880748
+  peak_rss_mb:  860
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run3  jemalloc+defid
+  wall_time:    0:04.58
+  peak_rss_kb:  860592
+  peak_rss_mb:  840
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+--- node-replication summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      954    0:05.47
+jemalloc                      863    0:04.63
+jemalloc+defid                839    0:04.58
+
+Finished: Thu Mar 19 02:56:28 PM PDT 2026

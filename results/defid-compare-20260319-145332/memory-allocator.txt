@@ -1,0 +1,100 @@
+PROJECT: memory-allocator
+Started: 2026-03-19T14:57:25-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/memory-allocator
+args: verus-mimalloc/lib.rs --extern libc=build/liblibc.rlib --triggers-mode silent --rlimit 240
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:04.42
+  peak_rss_kb:  591588
+  peak_rss_mb:  577
+  exit_code:    1
+  n/a
+
+warmup  jemalloc
+  wall_time:    0:03.67
+  peak_rss_kb:  545776
+  peak_rss_mb:  532
+  exit_code:    1
+  n/a
+
+warmup  jemalloc+defid
+  wall_time:    0:03.67
+  peak_rss_kb:  501888
+  peak_rss_mb:  490
+  exit_code:    1
+  n/a
+
+run1  baseline
+  wall_time:    0:04.36
+  peak_rss_kb:  591636
+  peak_rss_mb:  577
+  exit_code:    1
+  n/a
+
+run1  jemalloc
+  wall_time:    0:03.65
+  peak_rss_kb:  546256
+  peak_rss_mb:  533
+  exit_code:    1
+  n/a
+
+run1  jemalloc+defid
+  wall_time:    0:03.54
+  peak_rss_kb:  502172
+  peak_rss_mb:  490
+  exit_code:    1
+  n/a
+
+run2  baseline
+  wall_time:    0:04.22
+  peak_rss_kb:  591428
+  peak_rss_mb:  577
+  exit_code:    1
+  n/a
+
+run2  jemalloc
+  wall_time:    0:03.75
+  peak_rss_kb:  546220
+  peak_rss_mb:  533
+  exit_code:    1
+  n/a
+
+run2  jemalloc+defid
+  wall_time:    0:03.65
+  peak_rss_kb:  501892
+  peak_rss_mb:  490
+  exit_code:    1
+  n/a
+
+run3  baseline
+  wall_time:    0:04.38
+  peak_rss_kb:  591704
+  peak_rss_mb:  577
+  exit_code:    1
+  n/a
+
+run3  jemalloc
+  wall_time:    0:03.73
+  peak_rss_kb:  545936
+  peak_rss_mb:  533
+  exit_code:    1
+  n/a
+
+run3  jemalloc+defid
+  wall_time:    0:03.53
+  peak_rss_kb:  502372
+  peak_rss_mb:  490
+  exit_code:    1
+  n/a
+
+--- memory-allocator summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      577    0:04.38
+jemalloc                      533    0:03.73
+jemalloc+defid                490    0:03.53
+
+Finished: Thu Mar 19 02:58:11 PM PDT 2026

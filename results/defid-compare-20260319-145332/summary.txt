@@ -1,0 +1,46 @@
+========================================
+OVERALL SUMMARY
+========================================
+
+--- human-eval ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      616    0:05.15
+jemalloc                      576    0:04.85
+jemalloc+defid                567    0:04.79
+
+--- ironkv ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      783    0:05.04
+jemalloc                      719    0:04.61
+jemalloc+defid                704    0:04.53
+
+--- node-replication ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      954    0:05.47
+jemalloc                      863    0:04.63
+jemalloc+defid                839    0:04.58
+
+--- vest ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      647    0:04.89
+jemalloc                      577    0:04.51
+jemalloc+defid                564    0:04.49
+
+--- memory-allocator ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      577    0:04.38
+jemalloc                      533    0:03.73
+jemalloc+defid                490    0:03.53
+
+--- apas-verus ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                     5827    0:52.00
+jemalloc                     5196    0:45.48
+jemalloc+defid               4934    0:45.18
+

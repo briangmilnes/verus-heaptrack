@@ -1,0 +1,100 @@
+PROJECT: vest
+Started: 2026-03-19T14:56:28-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/vest
+args: vest/src/lib.rs --crate-type=lib --no-report-long-running
+  baseline: commit f04abf70
+  jemalloc: commit 5151db60
+  jemalloc+defid: commit fcc2e8d9
+
+warmup  baseline
+  wall_time:    0:04.95
+  peak_rss_kb:  663048
+  peak_rss_mb:  647
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+warmup  jemalloc
+  wall_time:    0:04.54
+  peak_rss_kb:  586468
+  peak_rss_mb:  572
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+warmup  jemalloc+defid
+  wall_time:    0:04.47
+  peak_rss_kb:  580940
+  peak_rss_mb:  567
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run1  baseline
+  wall_time:    0:05.00
+  peak_rss_kb:  662992
+  peak_rss_mb:  647
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:04.47
+  peak_rss_kb:  589620
+  peak_rss_mb:  575
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run1  jemalloc+defid
+  wall_time:    0:04.45
+  peak_rss_kb:  579428
+  peak_rss_mb:  565
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run2  baseline
+  wall_time:    0:04.94
+  peak_rss_kb:  663140
+  peak_rss_mb:  647
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:04.54
+  peak_rss_kb:  594388
+  peak_rss_mb:  580
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run2  jemalloc+defid
+  wall_time:    0:04.49
+  peak_rss_kb:  576088
+  peak_rss_mb:  562
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run3  baseline
+  wall_time:    0:04.89
+  peak_rss_kb:  662996
+  peak_rss_mb:  647
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:04.51
+  peak_rss_kb:  591712
+  peak_rss_mb:  577
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+run3  jemalloc+defid
+  wall_time:    0:04.49
+  peak_rss_kb:  578920
+  peak_rss_mb:  565
+  exit_code:    0
+  verification results:: 496 verified, 0 errors
+
+--- vest summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+baseline                      647    0:04.89
+jemalloc                      577    0:04.51
+jemalloc+defid                564    0:04.49
+
+Finished: Thu Mar 19 02:57:25 PM PDT 2026
