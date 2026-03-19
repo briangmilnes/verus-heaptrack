@@ -38,9 +38,10 @@ APAS-VERUS counted with `-e experiments -e attic`.
 | 6c | verified-storage/capybarakv | microsoft/verified-storage | 9,333 | 4,048 | 6,762 | 3,328 | 35,153 | 96 | 725 |
 | 7 | APAS-VERUS | briangmilnes/APAS-VERUS | 22,640 | 29,968 | 53,120 | 9,664 | 151,464 | 303 | 4,265 |
 
-verified-storage (6a/6b/6c) requires `cargo verus focus` which spawns `rust_verify` as
-a child process. `/usr/bin/time -v` reports peak RSS across the entire process tree, so
-we cannot isolate `rust_verify`'s memory usage from cargo's build processes.
+**verified-storage (6a/6b/6c) is excluded from benchmarks.** These projects require
+`cargo verus focus`, which spawns `rust_verify` as a child of cargo. `/usr/bin/time -v`
+reports peak RSS for the entire process tree, making it impossible to isolate
+`rust_verify`'s memory usage from cargo's build processes.
 
 **APAS-VERUS size notes:** APAS-VERUS is a teaching tool where each algorithm is implemented
 in up to four variants: single-threaded persistent, single-threaded ephemeral, multi-threaded
