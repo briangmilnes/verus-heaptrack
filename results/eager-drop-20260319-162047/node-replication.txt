@@ -1,0 +1,70 @@
+PROJECT: node-replication
+Started: 2026-03-19T16:22:08-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/node-replication
+args: verified-node-replication/src/lib.rs --crate-type=dylib
+  jemalloc: commit 5151db60
+  eager-drop: commit fcc2e8d9
+
+warmup  jemalloc
+  wall_time:    0:05.00
+  peak_rss_kb:  875712
+  peak_rss_mb:  855
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+warmup  eager-drop
+  wall_time:    0:05.00
+  peak_rss_kb:  861908
+  peak_rss_mb:  841
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:05.00
+  peak_rss_kb:  880776
+  peak_rss_mb:  860
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run1  eager-drop
+  wall_time:    0:04.74
+  peak_rss_kb:  861132
+  peak_rss_mb:  840
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:04.96
+  peak_rss_kb:  884816
+  peak_rss_mb:  864
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run2  eager-drop
+  wall_time:    0:04.89
+  peak_rss_kb:  856572
+  peak_rss_mb:  836
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:04.76
+  peak_rss_kb:  880960
+  peak_rss_mb:  860
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+run3  eager-drop
+  wall_time:    0:04.66
+  peak_rss_kb:  854156
+  peak_rss_mb:  834
+  exit_code:    0
+  verification results:: 254 verified, 0 errors
+
+--- node-replication summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      861    0:04.76
+eager-drop                    836    0:04.66
+
+Finished: Thu Mar 19 04:22:47 PM PDT 2026

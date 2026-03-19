@@ -80,16 +80,17 @@ Verus toolchain: 1.94.0-x86_64-unknown-linux-gnu
 | apas-verus | jemalloc | 45.15 | 45.61 | 45.41 | -6.77 | -13.0% |
 | apas-verus | jemalloc+defid | 44.62 | 45.18 | 44.89 | -7.29 | -14.0% |
 
-## Incremental Δ: jemalloc+defid vs jemalloc alone
+## Δ vs glibc Baseline — Per Project
 
-| Project | Δ RSS Avg (MB) | Δ RSS (%) | Δ Wall Avg (s) | Δ Wall (%) |
-|---------|----------------|-----------|----------------|------------|
-| human-eval | -9 | -1.6% | -0.10 | -2.1% |
-| ironkv | -16 | -2.2% | -0.04 | -0.9% |
-| node-replication | -24 | -2.8% | +0.01 | +0.2% |
-| vest | -13 | -2.3% | -0.03 | -0.7% |
-| memory-allocator* | -43 | -8.1% | -0.14 | -3.8% |
-| apas-verus | -262 | -5.0% | -0.52 | -1.1% |
+| Project | jemalloc Δ RSS (%) | jemalloc+defid Δ RSS (%) | jemalloc Δ Wall (%) | jemalloc+defid Δ Wall (%) |
+|---------|-------------------|--------------------------|--------------------:|-------------------------:|
+| human-eval | -6.5% | -8.0% | -6.7% | -8.6% |
+| ironkv | -8.1% | -10.1% | -9.5% | -10.3% |
+| node-replication | -9.6% | -12.1% | -15.7% | -15.5% |
+| vest | -10.8% | -12.8% | -8.7% | -9.3% |
+| memory-allocator* | -7.6% | -15.1% | -14.1% | -17.4% |
+| apas-verus | -10.8% | -15.3% | -13.0% | -14.0% |
+| **Average** | **-8.9%** | **-12.2%** | **-11.3%** | **-12.5%** |
 
 ## What the DefId Cache Does
 

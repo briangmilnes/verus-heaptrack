@@ -1,0 +1,70 @@
+PROJECT: human-eval
+Started: 2026-03-19T16:20:47-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/human-eval
+args: tasks/lib.rs --crate-type=lib
+  jemalloc: commit 5151db60
+  eager-drop: commit fcc2e8d9
+
+warmup  jemalloc
+  wall_time:    0:05.40
+  peak_rss_kb:  590176
+  peak_rss_mb:  576
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+warmup  eager-drop
+  wall_time:    0:05.13
+  peak_rss_kb:  572232
+  peak_rss_mb:  558
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:05.25
+  peak_rss_kb:  588280
+  peak_rss_mb:  574
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run1  eager-drop
+  wall_time:    0:05.16
+  peak_rss_kb:  578420
+  peak_rss_mb:  564
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:05.25
+  peak_rss_kb:  591268
+  peak_rss_mb:  577
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run2  eager-drop
+  wall_time:    0:05.02
+  peak_rss_kb:  577132
+  peak_rss_mb:  563
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:05.18
+  peak_rss_kb:  587996
+  peak_rss_mb:  574
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+run3  eager-drop
+  wall_time:    0:05.03
+  peak_rss_kb:  577100
+  peak_rss_mb:  563
+  exit_code:    0
+  verification results:: 292 verified, 0 errors
+
+--- human-eval summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      575    0:05.18
+eager-drop                    563    0:05.03
+
+Finished: Thu Mar 19 04:21:29 PM PDT 2026

@@ -1,0 +1,70 @@
+PROJECT: apas-verus
+Started: 2026-03-19T16:23:55-07:00
+cwd: /home/milnes/projects/verus-heaptrack/tests/fixtures/apas-verus
+args: --crate-type=lib src/lib.rs --num-threads 8
+  jemalloc: commit 5151db60
+  eager-drop: commit fcc2e8d9
+
+warmup  jemalloc
+  wall_time:    0:45.22
+  peak_rss_kb:  5326456
+  peak_rss_mb:  5201
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+warmup  eager-drop
+  wall_time:    0:45.82
+  peak_rss_kb:  5063184
+  peak_rss_mb:  4944
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run1  jemalloc
+  wall_time:    0:45.90
+  peak_rss_kb:  5318176
+  peak_rss_mb:  5193
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run1  eager-drop
+  wall_time:    0:45.93
+  peak_rss_kb:  5038720
+  peak_rss_mb:  4920
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run2  jemalloc
+  wall_time:    0:46.19
+  peak_rss_kb:  5316084
+  peak_rss_mb:  5191
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run2  eager-drop
+  wall_time:    0:45.11
+  peak_rss_kb:  5054872
+  peak_rss_mb:  4936
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run3  jemalloc
+  wall_time:    0:46.19
+  peak_rss_kb:  5335740
+  peak_rss_mb:  5210
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+run3  eager-drop
+  wall_time:    0:45.64
+  peak_rss_kb:  5036456
+  peak_rss_mb:  4918
+  exit_code:    0
+  verification results:: 4265 verified, 0 errors
+
+--- apas-verus summary ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                     5198    0:46.19
+eager-drop                   4924    0:45.64
+
+Finished: Thu Mar 19 04:30:01 PM PDT 2026

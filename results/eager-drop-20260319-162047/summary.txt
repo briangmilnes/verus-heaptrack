@@ -1,0 +1,40 @@
+========================================
+OVERALL SUMMARY
+========================================
+
+--- human-eval ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      575    0:05.18
+eager-drop                    563    0:05.03
+
+--- ironkv ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      718    0:04.89
+eager-drop                    701    0:04.78
+
+--- node-replication ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      861    0:04.76
+eager-drop                    836    0:04.66
+
+--- vest ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      572    0:04.62
+eager-drop                    561    0:04.55
+
+--- memory-allocator ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                      532    0:03.68
+eager-drop                    489    0:03.75
+
+--- apas-verus ---
+Variant               Peak RSS MB  Wall Time
+-------               -----------  ---------
+jemalloc                     5198    0:46.19
+eager-drop                   4924    0:45.64
+
