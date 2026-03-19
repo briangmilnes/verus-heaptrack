@@ -1,9 +1,17 @@
-# Benchmark: jemalloc + DefId Path Cache — All Projects
+# Benchmark: glibc vs jemalloc vs jemalloc+defid — All Projects
 
 Date: 2026-03-19
 Host: quiescent (no competing workloads)
 Method: 1 warmup + 3 timed runs per variant, sequential, `/usr/bin/time -v`
 Verus toolchain: 1.94.0-x86_64-unknown-linux-gnu
+
+## Summary — Average Across All 6 Projects
+
+| Variant | Avg Peak RSS (MB) | Δ RSS (MB) | Δ RSS (%) | Avg Wall Time (s) | Δ Wall (s) | Δ Wall (%) |
+|---------|-------------------|------------|-----------|-------------------|------------|------------|
+| baseline (glibc) | 1568 | -- | -- | 12.86 | -- | -- |
+| jemalloc | 1411 | -157 | -10.0% | 11.37 | -1.49 | -11.6% |
+| jemalloc+defid | 1350 | -218 | -13.9% | 11.21 | -1.65 | -12.8% |
 
 ## Variants
 
