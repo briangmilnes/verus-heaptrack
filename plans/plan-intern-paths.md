@@ -94,19 +94,259 @@ mutex-protected cache would be needed.
 The cache itself would hold ~20K entries of `(DefId, Arc<PathX>)` = ~640 KB.
 This is negligible compared to the 167 MB saved.
 
-## Alternative: String interner for Idents
+## Alternative: String Interner for Idents
 
-A more invasive but more thorough approach replaces `Ident = Arc<String>` with
-an interned symbol type (like rustc's `Symbol`). This would:
+### What string interning is
 
-- Deduplicate all string allocations across all VIR nodes
-- Make equality checks O(1) (integer comparison)
-- Make hashing O(1) (hash the index)
-- Benefit all 8+ HashMaps that key on Path
+String interning stores one canonical copy of each unique string in a
+global table, replacing all duplicates with a cheap handle (typically a
+`u32` index). Two interned strings can be compared for equality or hashed
+by comparing/hashing their indices — O(1) instead of O(n) in string
+length.
 
-But it changes a fundamental type used throughout VIR and AIR, affecting
-serialization, printing, and every place that constructs or pattern-matches
-on Idents. This is a major refactor.
+This is how rustc handles identifiers internally. Its `Symbol` type is a
+`u32` index into a global `Interner` table. Every identifier in the AST
+is a `Symbol`, not an `Arc<String>`. Equality is `==` on two `u32` values.
+
+### Current state in verus
+
+VIR defines (`vir/src/ast.rs:21`):
+
+```rust
+pub type Ident = Arc<String>;
+pub type Idents = Arc<Vec<Ident>>;
+```
+
+Every identifier in VIR is a separately heap-allocated `Arc<String>`.
+Construction happens in ~109 call sites across VIR, primarily via:
+
+```rust
+// air/src/ast_util.rs:58
+pub fn str_ident(x: &str) -> Ident {
+    Arc::new(x.to_string())
+}
+
+// And direct construction throughout def.rs, ast_to_sst.rs, etc.:
+Arc::new("some_string".to_string())
+```
+
+No deduplication occurs. The string `"bool"` may exist as hundreds of
+separate heap allocations across the VIR tree.
+
+### How interning would work for verus
+
+Replace the `Ident` type alias with a newtype wrapping a `u32` index:
+
+```rust
+// vir/src/ast.rs — replace the type alias
+#[derive(Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+pub struct Ident(u32);
+
+// Global interner (single-threaded phase, so no synchronization needed)
+use std::cell::RefCell;
+
+struct Interner {
+    strings: Vec<String>,            // index → string
+    lookup: HashMap<String, u32>,    // string → index
+}
+
+thread_local! {
+    static INTERNER: RefCell<Interner> = RefCell::new(Interner::new());
+}
+
+impl Ident {
+    pub fn intern(s: &str) -> Ident {
+        INTERNER.with(|interner| {
+            let mut interner = interner.borrow_mut();
+            if let Some(&idx) = interner.lookup.get(s) {
+                return Ident(idx);
+            }
+            let idx = interner.strings.len() as u32;
+            interner.strings.push(s.to_string());
+            interner.lookup.insert(s.to_string(), idx);
+            Ident(idx)
+        })
+    }
+
+    pub fn as_str(&self) -> &str {
+        // Must borrow from thread-local; returns require care
+        // In practice, resolve to String for display
+        INTERNER.with(|interner| {
+            let interner = interner.borrow();
+            &interner.strings[self.0 as usize]
+        })
+    }
+}
+```
+
+The `as_str` lifetime is tricky with `thread_local!` — the borrow cannot
+escape the closure. Practical alternatives:
+
+1. Return `String` (clone on access — acceptable since display/print is
+   infrequent compared to comparison/hashing)
+2. Use a `&'static str` approach where interned strings are leaked into
+   `&'static str` (never freed, but the interner lives for the process)
+3. Use an arena allocator that outlives all uses
+
+### Performance impact
+
+**Equality:** Currently `Arc<String>` equality compares string bytes —
+O(n) in string length. With interning, equality is `self.0 == other.0` —
+O(1). This benefits every HashMap keyed on `Ident` or `Path`:
+
+- `HashMap<Ident, Fun>` (context.rs:102)
+- `HashMap<Path, Trait>` (context.rs:110)
+- `HashMap<Path, OpaqueType>` (context.rs:103)
+- `HashMap<Ident, u64>` (ast_to_sst.rs:87)
+- `HashMap<Fun, Function>` — `Fun` contains a `Path` which contains `Idents`
+- At least 8 more maps in `Ctx` alone
+
+**Hashing:** Currently hashing an `Ident` hashes the full string bytes.
+With interning, hashing the `u32` index is O(1). Every HashMap lookup and
+insertion on paths becomes faster.
+
+**Memory:** Each `Arc<String>` costs at minimum 48 bytes (16 bytes Arc
+refcount + 16 bytes String header + 8 bytes allocation overhead + string
+data). An `Ident(u32)` is 4 bytes — stored inline, no heap allocation.
+For ~5 million Ident instances with ~20K unique strings, this saves
+roughly:
+
+- Eliminated: 5M × 48 bytes = ~240 MB of Arc<String> allocations
+- Added: 20K × ~60 bytes = ~1.2 MB for interner table
+- Net: ~239 MB saved
+
+**Copy semantics:** `Ident(u32)` is `Copy`, eliminating all `.clone()`
+calls on Ident values. No more refcount increments/decrements.
+
+### What would break
+
+**1. Serialization (~30 files)**
+
+`PathX` derives `Serialize, Deserialize` (`ast.rs:26`). With `Ident` as
+a `u32`, serialization would emit indices instead of strings. Fix: custom
+`Serialize`/`Deserialize` impls that resolve the index to/from a string.
+Alternatively, implement `serde::Serialize` on the `Ident` newtype itself
+so it serializes transparently as a string.
+
+```rust
+impl Serialize for Ident {
+    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        self.to_string().serialize(s)
+    }
+}
+
+impl<'de> Deserialize<'de> for Ident {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        let s = String::deserialize(d)?;
+        Ok(Ident::intern(&s))
+    }
+}
+```
+
+**2. Display/printing (~20 call sites)**
+
+Code that formats Idents (e.g. `def.rs:319` `path_to_string()` joining
+segments with `"."`) currently dereferences the `Arc<String>` directly.
+These would need `ident.as_str()` or `ident.to_string()` calls. The
+`Display` impl on the newtype handles most cases:
+
+```rust
+impl fmt::Display for Ident {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.to_string())
+    }
+}
+```
+
+**3. String construction patterns (~109 call sites)**
+
+Every `Arc::new(x.to_string())` becomes `Ident::intern(&x)`. Every
+`str_ident("foo")` becomes `Ident::intern("foo")`. These are mechanical
+search-and-replace changes but span 27+ source files across `vir/src/`
+and `air/src/`.
+
+**4. Pattern matching and mutation**
+
+Code in `def.rs` that builds new Idents by string concatenation:
+
+```rust
+// def.rs:341 — appends a suffix to an Ident
+let x = segments.last().expect("segment").to_string() + TRAIT_DEFAULT_SEPARATOR;
+*segments.last_mut().unwrap() = Arc::new(x);
+```
+
+Becomes:
+
+```rust
+let x = segments.last().expect("segment").to_string() + TRAIT_DEFAULT_SEPARATOR;
+*segments.last_mut().unwrap() = Ident::intern(&x);
+```
+
+Functionally identical. The new concatenated string gets interned (or
+found in the table if it already exists).
+
+**5. `VarIdent` wrapper (`ast.rs:77`)**
+
+```rust
+pub struct VarIdent(pub Ident, pub VarIdentDisambiguate);
+```
+
+This struct wraps an `Ident`. It derives `Serialize, Deserialize, Hash,
+Eq`. With interned `Ident`, its derives continue to work — `Hash` and
+`Eq` on a `u32` are free. Its `Display` impl (`ast_util.rs:1072`) calls
+`self.into()` to convert to String, which would call `Ident::to_string()`.
+
+**6. The `Idents` type**
+
+```rust
+pub type Idents = Arc<Vec<Ident>>;
+```
+
+Changes from `Arc<Vec<Arc<String>>>` (24 bytes per element) to
+`Arc<Vec<u32>>` (4 bytes per element). A path with 5 segments shrinks
+from ~120 bytes to ~20 bytes plus the Arc/Vec overhead. This compounds
+with path deduplication.
+
+### Scope of the refactor
+
+| Area | Files affected | Nature of change |
+|------|---------------|------------------|
+| Type definition | `vir/src/ast.rs` | Replace alias with newtype + interner |
+| Construction | ~27 files | `Arc::new(s.to_string())` → `Ident::intern(&s)` |
+| `str_ident` helper | `air/src/ast_util.rs` | Body changes to `Ident::intern(x)` |
+| Serialization | `ast.rs` + any custom impls | Custom Serialize/Deserialize on newtype |
+| Display/formatting | ~20 call sites | `.as_str()` or `.to_string()` where needed |
+| HashMap key types | No changes needed | `Ident` still implements `Hash + Eq` |
+| `VarIdent` | No changes needed | Inner `Ident` type change is transparent |
+| Tests | Unknown | May need interner initialization |
+| **Estimated total** | **~30 files, ~200-300 LOC** | Mostly mechanical |
+
+### Comparison: DefId cache vs string interner
+
+| Aspect | DefId cache | String interner |
+|--------|-------------|-----------------|
+| Memory saved | ~167 MB (path dedup) | ~239 MB (all Ident dedup) |
+| Equality speedup | None | O(n) → O(1) per comparison |
+| Hashing speedup | None | O(n) → O(1) per hash |
+| Copy semantics | No (still Arc clone) | Yes (u32 is Copy) |
+| Files changed | 1 | ~30 |
+| Risk | Low | Medium-high |
+| Incremental | Yes (do first) | Yes (do second, replaces cache) |
+
+### Recommendation
+
+The DefId cache and the string interner are not mutually exclusive but
+the interner subsumes the cache. If the interner is done, the DefId
+cache becomes unnecessary — interned Idents already deduplicate, so
+`def_id_to_vir_path` naturally returns shared Ident values without a
+separate cache.
+
+However, the DefId cache is still the right first step:
+
+1. It delivers ~167 MB savings in 10 lines with near-zero risk
+2. It validates the assumption that path deduplication is safe
+3. The string interner can be attempted later as a larger project
+4. If the interner is never done, the cache still captures most of the win
 
 ## Recommendation
 
