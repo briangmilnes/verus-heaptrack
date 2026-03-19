@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#
+# Run heaptrack on a verus fixture project.
+#
+# Usage:
+#   heaptrack-run <project>
+#
+# Examples:
+#   heaptrack-run node-replication
+#   heaptrack-run ironkv
+#
+# Output goes to results/heaptrack-<project>-<timestamp>/
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+FIXTURES="$PROJECT_ROOT/tests/fixtures"
+RESULTS_DIR="$PROJECT_ROOT/results"
+
+TOOLCHAIN="${VERUS_TOOLCHAIN:-1.94.0-x86_64-unknown-linux-gnu}"
+LD_LIB="$HOME/.rustup/toolchains/$TOOLCHAIN/lib"
+
+# Use baseline (glibc) binary — heaptrack cannot intercept jemalloc
+RV="$HOME/projects/verus-lang-baseline/source/target-verus/release/rust_verify"
+Z3="$HOME/projects/verus-lang-baseline/source/target-verus/release/z3"
+
+if [ $# -lt 1 ]; then
+    echo "Usage: heaptrack-run <project>" >&2
+    echo "Available: human-eval ironkv node-replication vest memory-allocator apas-verus" >&2
+    exit 1
+fi
+
+PROJECT="$1"
+
+declare -A PROJECT_DEF
+PROJECT_DEF[human-eval]="$FIXTURES/human-eval tasks/lib.rs --crate-type=lib"
+PROJECT_DEF[ironkv]="$FIXTURES/ironkv ironsht/src/lib.rs --crate-type=lib --no-report-long-running"
+PROJECT_DEF[node-replication]="$FIXTURES/node-replication verified-node-replication/src/lib.rs --crate-type=dylib"
+PROJECT_DEF[vest]="$FIXTURES/vest vest/src/lib.rs --crate-type=lib --no-report-long-running"
+PROJECT_DEF[memory-allocator]="$FIXTURES/memory-allocator verus-mimalloc/lib.rs --extern libc=build/liblibc.rlib --triggers-mode silent --rlimit 240"
+PROJECT_DEF[apas-verus]="$FIXTURES/apas-verus --crate-type=lib src/lib.rs --num-threads 8"
+
+if [ -z "${PROJECT_DEF[$PROJECT]+x}" ]; then
+    echo "ERROR: unknown project '$PROJECT'" >&2
+    echo "Available: human-eval ironkv node-replication vest memory-allocator apas-verus" >&2
+    exit 1
+fi
+
+if [ ! -x "$RV" ]; then
+    echo "ERROR: rust_verify not found at $RV" >&2
+    exit 1
+fi
+
+DEF="${PROJECT_DEF[$PROJECT]}"
+CWD=$(echo "$DEF" | awk '{print $1}')
+read -ra VERUS_ARGS <<< "$(echo "$DEF" | cut -d' ' -f2-)"
+
+TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+OUTDIR="$RESULTS_DIR/heaptrack-$PROJECT-$TIMESTAMP"
+mkdir -p "$OUTDIR"
+
+SINGULAR="$(which Singular 2>/dev/null || true)"
+
+echo "=== Heaptrack: $PROJECT ==="
+echo "Date:      $(date)"
+echo "Binary:    $RV"
+echo "Commit:    $(cd "$HOME/projects/verus-lang" && git rev-parse --short HEAD)"
+echo "Branch:    $(cd "$HOME/projects/verus-lang" && git branch --show-current)"
+echo "Output:    $OUTDIR"
+echo ""
+
+cd "$CWD"
+
+heaptrack -o "$OUTDIR/$PROJECT" \
+    env \
+    LD_LIBRARY_PATH="$LD_LIB" \
+    VSTD_KIND=Imported \
+    VERUS_Z3_PATH="$Z3" \
+    ${SINGULAR:+VERUS_SINGULAR_PATH="$SINGULAR"} \
+    RUSTC_BOOTSTRAP=1 \
+    "$RV" \
+    "${VERUS_ARGS[@]}"
+
+echo ""
+
+# Find the heaptrack data file
+HTFILE=$(ls -t "$OUTDIR"/$PROJECT.*.zst 2>/dev/null | head -1)
+if [ -z "$HTFILE" ]; then
+    HTFILE=$(ls -t "$OUTDIR"/$PROJECT.*.gz 2>/dev/null | head -1)
+fi
+
+if [ -n "$HTFILE" ]; then
+    echo "Generating summary..."
+    heaptrack_print "$HTFILE" > "$OUTDIR/summary.txt" 2>&1
+    echo "Summary written to: $OUTDIR/summary.txt"
+    echo ""
+    echo "=== Top 20 allocators by peak RSS contribution ==="
+    grep -A1 "peak RSS" "$OUTDIR/summary.txt" | head -5
+    echo ""
+    echo "=== Top 20 by total allocations ==="
+    # Print from "total allocations" section
+    sed -n '/^MOST CALLS/,/^$/p' "$OUTDIR/summary.txt" | head -25
+else
+    echo "WARNING: heaptrack data file not found in $OUTDIR"
+fi
+
+echo ""
+echo "Full results in: $OUTDIR"
+echo "To explore interactively: heaptrack_gui $HTFILE"
