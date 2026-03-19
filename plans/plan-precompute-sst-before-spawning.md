@@ -1,10 +1,3 @@
-<style>
-body { max-width: 98% !important; width: 98% !important; margin: 0 !important; padding: 1em !important; }
-.markdown-body { max-width: 98% !important; width: 98% !important; }
-.container, .container-lg, .container-xl, main, article { max-width: 98% !important; width: 98% !important; }
-table { width: 100% !important; table-layout: fixed; }
-</style>
-
 # Plan 3: Pre-compute SST Before Spawning Threads
 
 **Estimated savings:** ~150 MB (VIR expression/statement nodes only)
